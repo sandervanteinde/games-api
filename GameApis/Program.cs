@@ -1,3 +1,4 @@
+using GameApis.Domain.Exceptions;
 using GameApis.SecretHitler.Api;
 using GameApis.Shared.CancellationTokens;
 using GameApis.Shared.MongoAggregateStorage;
@@ -23,6 +24,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (DomainException ex)
+    {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsJsonAsync(new { Error = ex.Message, Code = ex.Code.ToString() });
+    }
+});
 
 app.MapSecretHitlerEndpoints();
 
