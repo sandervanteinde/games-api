@@ -1,0 +1,88 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31825.309
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0AB05829-F1A0-446B-8657-CA4D4E867AAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SecretHitler", "SecretHitler", "{52FB644B-E991-4303-9792-FBF39E8B7B18}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{FC1168DC-3C66-4743-ACCA-B183EE4FA4F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameApis.SecretHitler.Domain.Tests", "GameApis.SecretHitler.Domain.Tests\GameApis.SecretHitler.Domain.Tests.csproj", "{3DD02AB2-BC54-495B-8288-CBCDF439A60A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameApis.SecretHitler.Api", "GameApis.SecretHitler.Api\GameApis.SecretHitler.Api.csproj", "{769690F3-B93F-413F-8A71-0B295C258D34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameApis.SecretHitler.Domain", "GameApis.SecretHitler.Domain\GameApis.SecretHitler.Domain.csproj", "{ED10D795-D120-4103-A588-8B27EACFCE72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameApis.Domain", "GameApis.Domain.Core\GameApis.Domain.csproj", "{3AA26547-2720-4E4C-A018-AA4BA09C8656}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameApis.SecretHitler.Infrastructure", "GameApis.SecretHitler.Infrastructure\GameApis.SecretHitler.Infrastructure.csproj", "{AF06DFA6-43CE-46D1-902C-AD5684F86BE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameApis.Shared.CancellationTokens", "GameApis.Shared.CancellationTokens\GameApis.Shared.CancellationTokens.csproj", "{4038DC98-5A85-456A-A086-824421458962}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameApis.Shared.MongoAggregateStorage", "GameApis.Shared.MongoAggregateStorage\GameApis.Shared.MongoAggregateStorage.csproj", "{59398615-4EF1-4218-A8F1-726464D6E663}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89585FD1-2247-41FD-966A-8D42AAA61340}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameApis", "GameApis\GameApis.csproj", "{AC261E77-DFEB-4C1E-82AE-EBB7339083B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DD02AB2-BC54-495B-8288-CBCDF439A60A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD02AB2-BC54-495B-8288-CBCDF439A60A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD02AB2-BC54-495B-8288-CBCDF439A60A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD02AB2-BC54-495B-8288-CBCDF439A60A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{769690F3-B93F-413F-8A71-0B295C258D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769690F3-B93F-413F-8A71-0B295C258D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769690F3-B93F-413F-8A71-0B295C258D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769690F3-B93F-413F-8A71-0B295C258D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED10D795-D120-4103-A588-8B27EACFCE72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED10D795-D120-4103-A588-8B27EACFCE72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED10D795-D120-4103-A588-8B27EACFCE72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED10D795-D120-4103-A588-8B27EACFCE72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AA26547-2720-4E4C-A018-AA4BA09C8656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AA26547-2720-4E4C-A018-AA4BA09C8656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AA26547-2720-4E4C-A018-AA4BA09C8656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AA26547-2720-4E4C-A018-AA4BA09C8656}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF06DFA6-43CE-46D1-902C-AD5684F86BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF06DFA6-43CE-46D1-902C-AD5684F86BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF06DFA6-43CE-46D1-902C-AD5684F86BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF06DFA6-43CE-46D1-902C-AD5684F86BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4038DC98-5A85-456A-A086-824421458962}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4038DC98-5A85-456A-A086-824421458962}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4038DC98-5A85-456A-A086-824421458962}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4038DC98-5A85-456A-A086-824421458962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59398615-4EF1-4218-A8F1-726464D6E663}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59398615-4EF1-4218-A8F1-726464D6E663}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59398615-4EF1-4218-A8F1-726464D6E663}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59398615-4EF1-4218-A8F1-726464D6E663}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC261E77-DFEB-4C1E-82AE-EBB7339083B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC261E77-DFEB-4C1E-82AE-EBB7339083B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC261E77-DFEB-4C1E-82AE-EBB7339083B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC261E77-DFEB-4C1E-82AE-EBB7339083B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0AB05829-F1A0-446B-8657-CA4D4E867AAC} = {52FB644B-E991-4303-9792-FBF39E8B7B18}
+		{3DD02AB2-BC54-495B-8288-CBCDF439A60A} = {0AB05829-F1A0-446B-8657-CA4D4E867AAC}
+		{769690F3-B93F-413F-8A71-0B295C258D34} = {52FB644B-E991-4303-9792-FBF39E8B7B18}
+		{ED10D795-D120-4103-A588-8B27EACFCE72} = {52FB644B-E991-4303-9792-FBF39E8B7B18}
+		{3AA26547-2720-4E4C-A018-AA4BA09C8656} = {FC1168DC-3C66-4743-ACCA-B183EE4FA4F9}
+		{AF06DFA6-43CE-46D1-902C-AD5684F86BE2} = {52FB644B-E991-4303-9792-FBF39E8B7B18}
+		{4038DC98-5A85-456A-A086-824421458962} = {FC1168DC-3C66-4743-ACCA-B183EE4FA4F9}
+		{59398615-4EF1-4218-A8F1-726464D6E663} = {FC1168DC-3C66-4743-ACCA-B183EE4FA4F9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {81A5DA6A-2316-41DC-A0A9-1B44DE5D25E8}
+	EndGlobalSection
+EndGlobal

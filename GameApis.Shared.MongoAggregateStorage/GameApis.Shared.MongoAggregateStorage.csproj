@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameApis.Domain.Core\GameApis.Domain.csproj" />
+    <ProjectReference Include="..\GameApis.Shared.CancellationTokens\GameApis.Shared.CancellationTokens.csproj" />
+  </ItemGroup>
+
+</Project>
