@@ -76,7 +76,7 @@ public class SecretHitlerGameTests
     public void AddPlayer_ThrowsDomainException_WhenGameHasStarted()
     {
         // arrange
-        GenerateGameWithMinimumPlayers();
+        SetGameInWaitingWithMinimumPlayers();
         _sut.StartGame();
 
         // act
@@ -117,7 +117,7 @@ public class SecretHitlerGameTests
     {
         // arrange
         _sut.AddPlayer("Bogus");
-        var playerId = _sut.Players.First().Id;
+        var playerId = _sut.Players.First().Id.InternalId;
 
         // act
         _sut.PlayerLeaves(playerId);
@@ -132,7 +132,7 @@ public class SecretHitlerGameTests
     {
         // arrange
         _sut.AddPlayer("Bogus");
-        var playerId = _sut.Players.First().Id;
+        var playerId = _sut.Players.First().Id.InternalId;
 
         // act
         _sut.PlayerLeaves(playerId);
@@ -145,7 +145,7 @@ public class SecretHitlerGameTests
     public void StartGame_WithEnoughPlayers_ResultsInStartGameEvent()
     {
         // arrange
-        GenerateGameWithMinimumPlayers();
+        SetGameInWaitingWithMinimumPlayers();
 
         // act
         _sut.StartGame();
@@ -159,7 +159,7 @@ public class SecretHitlerGameTests
     public void StartGame_WithGameAlreadyStarted_ResultsInDomainException()
     {
         // arrange
-        GenerateGameWithMinimumPlayers();
+        SetGameInWaitingWithMinimumPlayers();
         _sut.StartGame();
 
         // act
@@ -184,20 +184,20 @@ public class SecretHitlerGameTests
     public void StartGame_WithEnoughPlayers_ChangesStateToStarted()
     {
         // arrange
-        GenerateGameWithMinimumPlayers();
+        SetGameInWaitingWithMinimumPlayers();
 
         // act
         _sut.StartGame();
 
         // assert
-        _sut.State.Should().Be(GameState.Started);
+        _sut.State.Should().Be(GameState.PickAChancellor);
     }
 
     [Fact]
     public void StartGame_WithEnoughPlayers_AssignsPlayerRoles()
     {
         // arrange
-        GenerateGameWithMinimumPlayers();
+        SetGameInWaitingWithMinimumPlayers();
 
         // act
         _sut.StartGame();
@@ -264,11 +264,124 @@ public class SecretHitlerGameTests
         fascistCards.Should().Be(11);
     }
 
-    private void GenerateGameWithMinimumPlayers()
+    [Fact]
+    public void ElectChancellor_WithValidCandidate_ElectsChancellor()
+    {
+        // arrange
+        SetGameInPickChancellorState();
+        var playerThatIsNotPresident = _sut.Players
+            .Where(player => player != _sut.ElectedPresident)
+            .First();
+
+        // act
+        _sut.ElectChancellor(_sut.ElectedPresident!.Id.InternalId, playerThatIsNotPresident.Id.ExternalId);
+
+        // assert
+        _sut.ElectedChancellor.Should().Be(playerThatIsNotPresident);
+    }
+
+    [Fact]
+    public void ElectChancellor_PresidentElectingHimself_ThrowsDomainException()
+    {
+        // arrange
+        SetGameInPickChancellorState();
+
+        // act
+        var act = () => _sut.ElectChancellor(_sut.ElectedPresident!.Id.InternalId, _sut.ElectedPresident.Id.ExternalId);
+
+        // assert
+        act.Should().ThrowExactly<DomainException>().WithCode(DomainExceptionCodes.InvalidTargetPlayer);
+    }
+
+    [Fact]
+    public void ElectChancellor_NotElectedPresidentPickingChancellor_ThrowsDomainException()
+    {
+        // arrange
+        SetGameInPickChancellorState();
+        var notElectedPresident = _sut.Players
+            .First(player => player != _sut.ElectedPresident);
+        var validChancellorTarget = _sut.Players
+            .First(player => player != notElectedPresident && player != _sut.ElectedPresident);
+
+        // act
+        var act = () => _sut.ElectChancellor(notElectedPresident.Id.InternalId, validChancellorTarget.Id.ExternalId);
+
+        // assert
+        act.Should().ThrowExactly<DomainException>().WithCode(DomainExceptionCodes.PlayerCantPerformAction);
+    }
+
+    [Fact]
+    public void ElectChancellor_UnknownPlayerName_ThrowsDomainException()
+    {
+        // arrange
+        SetGameInPickChancellorState();
+        Guid guidThatIsNotInternalPlayerId;
+        do
+        {
+            guidThatIsNotInternalPlayerId = Guid.NewGuid();
+        }
+        while(_sut.Players.Any(player => player.Id.InternalId == guidThatIsNotInternalPlayerId));
+
+        // act
+        var act = () => _sut.ElectChancellor(_sut.ElectedPresident!.Id.InternalId, Guid.NewGuid());
+
+        // assert
+        act.Should().ThrowExactly<DomainException>().WithCode(DomainExceptionCodes.InvalidTargetPlayer);
+    }
+
+    [Fact]
+    public void CastVote_EverybodyVotingNo_SetsVotingNoState()
+    {
+        // arrange
+        SetGameInVotingState();
+        var initialPresident = _sut.ElectedPresident;
+
+        // act
+        foreach(var player in _sut.Players)
+        {
+            _sut.CastVote(player.Id.InternalId, Vote.No);
+        }
+        
+        // assert
+        _sut.ElectedPresident.Should().NotBe(initialPresident);
+        _sut.ElectedChancellor.Should().BeNull();
+        _sut.State.Should().Be(GameState.PickAChancellor);
+        _sut.AmountOfFailedVotes.Should().Be(1);
+    }
+
+    [Fact]
+    public void CastVote_PlayerVotingTwice_ThrowsDomainException()
+    {
+        // arrange
+        SetGameInVotingState();
+        var votingPlayer = _sut.Players[0];
+        _sut.CastVote(votingPlayer.Id.InternalId, Vote.Yes);
+
+        // act
+        var act = () => _sut.CastVote(votingPlayer.Id.InternalId, Vote.No);
+
+        // assert
+        act.Should().ThrowExactly<DomainException>().WithCode(DomainExceptionCodes.ActionAlreadyPerformed);
+    }
+
+    private void SetGameInWaitingWithMinimumPlayers()
     {
         for (var i = 0; i < SecretHitlerGame.MIN_PLAYERS; i++)
         {
             _sut.AddPlayer($"Player {i}");
         }
+    }
+
+    private void SetGameInPickChancellorState()
+    {
+        SetGameInWaitingWithMinimumPlayers();
+        _sut.StartGame();
+    }
+
+    private void SetGameInVotingState()
+    {
+        SetGameInPickChancellorState();
+        var chancellor = _sut.Players.First(player => player != _sut.ElectedPresident);
+        _sut.ElectChancellor(_sut.ElectedPresident!.Id.InternalId, chancellor.Id.ExternalId);
     }
 }

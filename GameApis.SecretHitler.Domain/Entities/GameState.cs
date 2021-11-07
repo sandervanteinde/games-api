@@ -3,5 +3,7 @@
 public enum GameState
 {
     NotStarted,
-    Started
+    PickAChancellor,
+    Voting,
+    PresidentPicksCardToThrow
 }

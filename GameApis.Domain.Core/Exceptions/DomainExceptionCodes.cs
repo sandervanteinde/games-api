@@ -6,5 +6,8 @@ public enum DomainExceptionCodes
     GameHasStarted,
     PlayerNotFound,
     NotEnoughPlayers,
-    DuplicatePlayerName
+    DuplicatePlayerName,
+    PlayerCantPerformAction,
+    InvalidTargetPlayer,
+    ActionAlreadyPerformed
 }

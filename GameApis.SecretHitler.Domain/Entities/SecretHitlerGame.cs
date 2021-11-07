@@ -2,6 +2,7 @@
 using GameApis.Domain.Exceptions;
 using GameApis.SecretHitler.Domain.Events;
 using GameApis.SecretHitler.Domain.Extensions;
+using System.Runtime.CompilerServices;
 
 namespace GameApis.SecretHitler.Domain.Entities;
 
@@ -16,6 +17,16 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
 
     public IReadOnlyList<Player> Players => _players.AsReadOnly();
     public GameState State { get; private set; } = GameState.NotStarted;
+    public int AmountOfFailedVotes { get; private set; }
+
+    public Player? ElectedPresident { get; private set; }
+    public Player? ElectedChancellor { get;private set; }
+
+    public Player? President { get; private set; }
+    public Player? Chancellor { get; private set; }
+
+    public Player? PreviousPresident { get; private set; }
+    public Player? PreviousChancellor { get; private set; }
 
     private SecretHitlerGame(Guid id) : base(id) { }
     public SecretHitlerGame(Guid id, IEnumerable<DomainEvent> events) : base(id, events) { }
@@ -47,12 +58,20 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
         }
 
         var newPlayerId = Guid.NewGuid();
-        RaiseEvent(new PlayerJoined { GameId = Id, PlayerId = newPlayerId, PlayerName = name });
+        var newInternalPlayerId = Guid.NewGuid();
+        var playerJoined = new PlayerJoined
+        {
+            GameId = Id,
+            ExternalPlayerId = newPlayerId,
+            InternalPlayerId = newInternalPlayerId,
+            PlayerName = name
+        };
+        RaiseEvent(playerJoined);
     }
 
     public void PlayerLeaves(Guid playerId)
     {
-        if (_players.All(player => player.Id != playerId))
+        if (_players.All(player => player.Id.InternalId != playerId))
         {
             throw new DomainException(DomainExceptionCodes.PlayerNotFound);
         }
@@ -78,7 +97,7 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
         var assignments = roles
             .Select((role, i) => new GameStarted.RoleAssignment
             {
-                PlayerId = _players[i].Id,
+                PlayerId = _players[i].Id.InternalId,
                 Role = role
             })
             .ToArray();
@@ -90,9 +109,75 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
             GameId = Id,
             Assignments = assignments,
             Cards = drawDeck,
-            InitialPresidentId = randomPresident.Id
+            InitialPresidentId = randomPresident.Id.InternalId
         };
         RaiseEvent(gameStartedEvent);
+    }
+
+    public void ElectChancellor(Guid playerId, Guid playerExternalId)
+    {
+        if(playerId != ElectedPresident?.Id.InternalId)
+        {
+            throw new DomainException(DomainExceptionCodes.PlayerCantPerformAction);
+        }
+        var electedPlayer = _players.Find(player => player.Id.ExternalId == playerExternalId);
+        if(electedPlayer is null)
+        {
+            throw new DomainException(DomainExceptionCodes.InvalidTargetPlayer);
+        }
+
+        var alivePlayers = _players.Where(player => player.Alive).Count();
+        var canPreviousPresidentBeElected = alivePlayers <= 5;
+
+        if(
+            (electedPlayer == PreviousPresident && !canPreviousPresidentBeElected) 
+            || electedPlayer == PreviousChancellor
+            || electedPlayer == ElectedPresident)
+        {
+            throw new DomainException(DomainExceptionCodes.InvalidTargetPlayer);
+        }
+
+        var playerElected = new ChancellorElected {  GameId = Id, ChancellorId = electedPlayer.Id.InternalId };
+        RaiseEvent(playerElected);
+    }
+
+    public void CastVote(Guid playerId, Vote vote)
+    {
+        var player = _players.Find(player => player.Id.InternalId == playerId);
+        if (player is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        if (player.CastVote is not null)
+        {
+            throw new DomainException(DomainExceptionCodes.ActionAlreadyPerformed);
+        }
+
+        RaiseEvent(new VoteCast
+        {
+            GameId = Id,
+            PlayerId = playerId,
+            Vote = vote
+        });
+
+        if(_players.Any(player => player.CastVote is null))
+        {
+            return;
+        }
+
+        var votesCast = new VoteResults
+        {
+            GameId = Id,
+            Results = _players
+                .Select(player => new VoteResults.VoteResult
+                {
+                    ExternalPlayerId = player.Id.ExternalId,
+                    Vote = player.CastVote ?? throw new InvalidOperationException()
+                })
+                .ToArray()
+        };
+        RaiseEvent(votesCast);
     }
 
     protected override void When(dynamic @event)
@@ -100,9 +185,66 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
         HandleEvent(@event);
     }
 
+    private void HandleEvent(VoteSucceeded voteSucceeded)
+    {
+        President = ElectedPresident;
+        Chancellor = ElectedChancellor;
+        ElectedChancellor = null;
+        ElectedPresident = null;
+        AmountOfFailedVotes = 0;
+
+        State = GameState.PresidentPicksCardToThrow;
+        // TODO: Give cards to president for picking.
+    }
+
+    private void HandleEvent(VoteFailed voteFailed)
+    {
+        var presidentIndex = _players.IndexOf(ElectedPresident!);
+        Player nextPresident;
+        do
+        {
+            nextPresident = _players[(presidentIndex + 1) % _players.Count];
+            presidentIndex++;
+        } while (nextPresident.Alive is false);
+        ElectedPresident = nextPresident;
+        ElectedChancellor = null;
+        State = GameState.PickAChancellor;
+        ++AmountOfFailedVotes;
+    }
+
+    private void HandleEvent(VoteResults results)
+    {
+        var votes = results.Results.ToLookup(player => player.Vote == Vote.Yes);
+        var votesPassed = votes[true].Count() > votes[false].Count();
+        _players.ForEach(player => player.CastVote = null);
+        RaiseEvent(votesPassed ? new VoteSucceeded() : new VoteFailed());
+    }
+
+    private void HandleEvent(VoteCast voteCast)
+    {
+        var player = _players.Find(player => player.Id.InternalId == voteCast.PlayerId);
+        if(player is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        player.CastVote = voteCast.Vote;
+    }
+
+    private void HandleEvent(ChancellorElected chancellorElected)
+    {
+        var player = _players.Find(player => player.Id.InternalId == chancellorElected.ChancellorId);
+        if(player is null)
+        {
+            throw new InvalidOperationException();
+        }
+        ElectedChancellor = player;
+        State = GameState.Voting;
+    }
+
     private void HandleEvent(PlayerJoined playerJoined)
     {
-        var player = new Player(playerJoined.PlayerId, playerJoined.PlayerName);
+        var player = new Player(playerJoined.InternalPlayerId, playerJoined.ExternalPlayerId, playerJoined.PlayerName);
         _players.Add(player);
     }
 
@@ -113,9 +255,9 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
 
     private void HandleEvent(GameStarted gameStarted)
     {
-        State = GameState.Started;
+        State = GameState.PickAChancellor;
         DrawPile = new Deck(gameStarted.Cards);
-        var playersById = _players.ToDictionary(player => player.Id);
+        var playersById = _players.ToDictionary(player => player.Id.InternalId);
         foreach (var assignment in gameStarted.Assignments)
         {
             if (!playersById.TryGetValue(assignment.PlayerId, out var player))
@@ -125,11 +267,12 @@ public partial class SecretHitlerGame : AggregateRoot<Guid>
 
             player.Role = assignment.Role;
         }
+        ElectedPresident = playersById[gameStarted.InitialPresidentId];
     }
 
     private void HandleEvent(PlayerLeft playerLeft)
     {
-        var index = _players.FindIndex(player => player.Id == playerLeft.PlayerId);
+        var index = _players.FindIndex(player => player.Id.InternalId == playerLeft.PlayerId);
         _players.RemoveAt(index);
     }
 
