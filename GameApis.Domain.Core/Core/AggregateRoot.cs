@@ -93,6 +93,4 @@ public abstract class AggregateRoot<TId> : Entity<TId>
     /// <remarks>Because the parameter type of the specified event is dynamic, 
     /// the appropriate overload of the When method is called.</remarks>
     protected abstract void When(dynamic @event);
-
-    public abstract string GetUniqueIdentifier();
 }

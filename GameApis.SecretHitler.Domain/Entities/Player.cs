@@ -4,9 +4,11 @@ namespace GameApis.SecretHitler.Domain.Entities;
 
 public class Player : Entity<Guid>
 {
-    public string Name { get; private set; }
+    public string Name { get; internal set; }
 
-    public Role Role { get; private set; }
+    public Role Role { get; internal set; }
+
+    public bool Alive { get; internal set; } = true;
 
     public Player(Guid id, string name)
         : base(id)

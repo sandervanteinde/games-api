@@ -76,10 +76,7 @@ public class SecretHitlerGameTests
     public void AddPlayer_ThrowsDomainException_WhenGameHasStarted()
     {
         // arrange
-        for (var i = 0; i < SecretHitlerGame.MIN_PLAYERS; i++)
-        {
-            _sut.AddPlayer($"Player {i}");
-        }
+        GenerateGameWithMinimumPlayers();
         _sut.StartGame();
 
         // act
@@ -148,27 +145,21 @@ public class SecretHitlerGameTests
     public void StartGame_WithEnoughPlayers_ResultsInStartGameEvent()
     {
         // arrange
-        for (var i = 0; i < SecretHitlerGame.MIN_PLAYERS; i++)
-        {
-            _sut.AddPlayer($"Player {i}");
-        }
+        GenerateGameWithMinimumPlayers();
 
         // act
         _sut.StartGame();
 
         // assert
-        var lastEvent = _sut.GetEvents().Last();
-        lastEvent.Should().BeOfType<GameStarted>().Which.GameId.Should().Be(_sut.Id);
+        var gameStartedEvent = _sut.GetEvents().OfType<GameStarted>().First();
+        gameStartedEvent.GameId.Should().Be(_sut.Id);
     }
 
     [Fact]
     public void StartGame_WithGameAlreadyStarted_ResultsInDomainException()
     {
         // arrange
-        for (var i = 0; i < SecretHitlerGame.MIN_PLAYERS; i++)
-        {
-            _sut.AddPlayer($"Player {i}");
-        }
+        GenerateGameWithMinimumPlayers();
         _sut.StartGame();
 
         // act
@@ -190,6 +181,36 @@ public class SecretHitlerGameTests
     }
 
     [Fact]
+    public void StartGame_WithEnoughPlayers_ChangesStateToStarted()
+    {
+        // arrange
+        GenerateGameWithMinimumPlayers();
+
+        // act
+        _sut.StartGame();
+
+        // assert
+        _sut.State.Should().Be(GameState.Started);
+    }
+
+    [Fact]
+    public void StartGame_WithEnoughPlayers_AssignsPlayerRoles()
+    {
+        // arrange
+        GenerateGameWithMinimumPlayers();
+
+        // act
+        _sut.StartGame();
+
+        // assert
+        foreach (var player in _sut.Players)
+        {
+            player.Role.Should().NotBe(Role.Unassigned);
+        }
+
+    }
+
+    [Fact]
     public void RestoringGameThroughCtor_ResultsInSameGame()
     {
         // arrange
@@ -205,5 +226,49 @@ public class SecretHitlerGameTests
 
         // assert
         duplicateGame.Should().BeEquivalentTo(_sut, cfg => cfg.Excluding(e => e.OriginalVersion).ExcludingFields());
+    }
+
+    [Theory]
+    [InlineData(5, 3, 1)]
+    [InlineData(6, 4, 1)]
+    [InlineData(7, 4, 2)]
+    [InlineData(8, 5, 2)]
+    [InlineData(9, 5, 3)]
+    [InlineData(10, 6, 3)]
+    public void AvailableRolesForPlayerCount_ShouldAlwaysHaveMatchingAmountOfLiberalsAndFascists(int playerCount, int expectedLiberals, int expectedFascists)
+    {
+        // arrange
+        // act
+        var roles = SecretHitlerGame.AvailableRolesForPlayerCount(playerCount);
+        var amountOfLiberals = roles.Where(role => role is Role.Liberal).Count();
+        var amountOfFascists = roles.Where(role => role is Role.Fascist).Count();
+        var hasHitler = roles.Any(role => role is Role.Hitler);
+
+        // assert
+        hasHitler.Should().BeTrue();
+        amountOfFascists.Should().Be(expectedFascists);
+        amountOfLiberals.Should().Be(expectedLiberals);
+    }
+
+    [Fact]
+    public void GenerateDrawDeck_ShouldAlwaysReturnCorrectAmountOfCards()
+    {
+        // arrange
+        // act
+        var cards = SecretHitlerGame.GenerateDrawDeck();
+        var liberalCards = cards.Where(card => card is Card.Liberal).Count();
+        var fascistCards = cards.Where(card => card is Card.Fascist).Count();
+
+        // assert
+        liberalCards.Should().Be(8);
+        fascistCards.Should().Be(11);
+    }
+
+    private void GenerateGameWithMinimumPlayers()
+    {
+        for (var i = 0; i < SecretHitlerGame.MIN_PLAYERS; i++)
+        {
+            _sut.AddPlayer($"Player {i}");
+        }
     }
 }
