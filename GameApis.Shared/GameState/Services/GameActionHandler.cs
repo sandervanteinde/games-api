@@ -7,6 +7,7 @@ using OneOf.Types;
 namespace GameApis.Shared.GameState.Services;
 
 internal class GameActionHandler<TGameContext> : IGameActionHandler<TGameContext>
+    where TGameContext : IGameContext
 {
     private readonly IGameRepository<TGameContext> gameRepository;
     private readonly IInternalPlayerIdResolver playerIdResolver;
@@ -25,7 +26,8 @@ internal class GameActionHandler<TGameContext> : IGameActionHandler<TGameContext
         this.logger = logger;
     }
 
-    public async Task<OneOf<Success, ActionFailed>> HandleGameActionAsync(GameId gameId, IAction gameAction)
+    public async Task<OneOf<Success, ActionFailed>> HandleGameActionAsync<TAction>(GameId gameId, TAction gameAction)
+        where TAction : IAction
     {
         var result = await gameRepository.GetGameEngineAsync(gameId);
         if (result.TryPickT1(out _, out var gameEngine))
@@ -46,7 +48,12 @@ internal class GameActionHandler<TGameContext> : IGameActionHandler<TGameContext
 
         try
         {
-            return await gameEngine.HandleActionAsync(player.Id, gameAction);
+            var response = await gameEngine.HandleActionAsync(player.Id, gameAction);
+            if (response.IsT0)
+            {
+                await gameRepository.PersistGameEngineAsync(gameId, gameEngine);
+            }
+            return response;
         }
         catch (Exception ex)
         {

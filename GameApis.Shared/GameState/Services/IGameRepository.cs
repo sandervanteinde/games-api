@@ -4,7 +4,8 @@ using OneOf.Types;
 namespace GameApis.Shared.GameState.Services;
 
 public interface IGameRepository<TGameContext>
+    where TGameContext : IGameContext
 {
     Task<OneOf<GameEngine<TGameContext>, NotFound>> GetGameEngineAsync(GameId gameId);
-    Task<GameId> PersistGameEngineAsync(GameEngine<TGameContext> gameEngine);
+    Task PersistGameEngineAsync(GameId gameId, GameEngine<TGameContext> gameEngine);
 }

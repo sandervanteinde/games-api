@@ -1,4 +1,5 @@
-﻿using GameApis.Shared.GameState;
+﻿using GameApis.Shared;
+using GameApis.Shared.GameState;
 using GameApis.Shared.GameState.Services;
 using System.Reflection;
 
@@ -45,7 +46,8 @@ internal static class EndpointHandlers
         return async (IGameRepository<TGameContext> gameRepository, TInitialState initialState) =>
         {
             var gameEngine = new GameEngine<TGameContext>(initialState, new TGameContext());
-            var gameId = await gameRepository.PersistGameEngineAsync(gameEngine);
+            var gameId = GameId.New();
+            await gameRepository.PersistGameEngineAsync(gameId, gameEngine);
             return gameId.Value;
         };
     }

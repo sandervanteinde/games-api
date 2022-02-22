@@ -8,6 +8,7 @@ using OneOf.Types;
 namespace GameApis.MongoDb;
 
 internal class MongoGameRepository<TGameContext> : IGameRepository<TGameContext>
+    where TGameContext : IGameContext
 {
     private readonly IMongoClient mongoClient;
     private readonly IGameStateResolver<TGameContext> gameStateResolver;
@@ -41,18 +42,15 @@ internal class MongoGameRepository<TGameContext> : IGameRepository<TGameContext>
         return new GameEngine<TGameContext>(gameState, entry.GameContext);
     }
 
-    public async Task<GameId> PersistGameEngineAsync(GameEngine<TGameContext> gameEngine)
+    public Task PersistGameEngineAsync(GameId gameId, GameEngine<TGameContext> gameEngine)
     {
         var collection = GetCollection();
-        var gameId = GameId.New();
-        await collection.InsertOneAsync(new MongoEntry<TGameContext>
+        return collection.ReplaceOneAsync(entry => entry.Id == gameId.Value, new MongoEntry<TGameContext>
         {
             Id = gameId.Value,
             GameContext = gameEngine.GameContext,
             CurrentState = gameEngine.GameState.GetType().Name
-        });
-
-        return gameId;
+        }, new ReplaceOptions { IsUpsert = true });
     }
 
     private IMongoCollection<MongoEntry<TGameContext>> GetCollection()

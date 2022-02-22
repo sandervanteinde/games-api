@@ -1,5 +1,8 @@
-﻿using GameApis.Shared.GameState;
+﻿using GameApis.Shared.Dtos;
+using GameApis.Shared.GameState;
 using GameApis.TicTacToe.GameState.Actions;
+using OneOf;
+using OneOf.Types;
 
 namespace GameApis.TicTacToe.GameState.States;
 
@@ -17,14 +20,18 @@ public class WaitForPlayersState
         };
     }
 
-    public Task<ActionResult> HandleActionAsync(ActionContext<TicTacToeContext, JoinPlayerAction> actionContext)
+    public OneOf<Success, ActionFailed> HandleAction(ActionContext<TicTacToeContext, JoinPlayerAction> actionContext)
     {
         var context = actionContext.Context;
         var playerId = actionContext.Action.PlayerId;
+        if (actionContext.PlayerPerformingAction != playerId)
+        {
+            return new ActionFailed("Only the player executing the request can join the lobby.");
+        }
         if (context.PlayerOneId is null)
         {
             context.PlayerOneId = playerId;
-            return ActionResult.Success();
+            return new Success();
         }
         if (context.PlayerOneId == playerId)
         {
@@ -33,15 +40,15 @@ public class WaitForPlayersState
         if (context.PlayerTwoId is null)
         {
             context.PlayerTwoId = playerId;
-            return ActionResult.Success();
+            return new Success();
         }
         if (context.PlayerTwoId == playerId)
         {
             return AlreadyInLobby();
         }
 
-        return ActionResult.Fail("The lobby is full.");
+        return new ActionFailed("The lobby is full.");
 
-        static Task<ActionResult> AlreadyInLobby() => ActionResult.Fail("Player is already in the game lobby.");
+        static ActionFailed AlreadyInLobby() => new ActionFailed("Player is already in the game lobby.");
     }
 }

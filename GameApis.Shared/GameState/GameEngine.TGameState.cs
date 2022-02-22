@@ -6,6 +6,7 @@ using OneOf.Types;
 namespace GameApis.Shared.GameState;
 
 public class GameEngine<TGameContext>
+    where TGameContext : IGameContext
 {
     public TGameContext GameContext { get; }
     public IGameState<TGameContext> GameState { get; private set; }
@@ -25,15 +26,17 @@ public class GameEngine<TGameContext>
     internal async Task<OneOf<Success, ActionFailed>> HandleActionAsync<TAction>(PlayerId playerId, TAction action)
         where TAction : IAction
     {
-        if (GameState is not IHandleGameAction<TGameContext, TAction> handler)
+        var actionContext = new ActionContext<TGameContext, TAction>(playerId, action, GameContext, this);
+        if (GameState is IHandleGameAction<TGameContext, TAction> handler)
         {
-            return new ActionFailed("The action was invaid in the current game state");
+            return handler.HandleAction(actionContext);
+        }
+        if (GameState is IHandleGameActionAsync<TGameContext, TAction> asyncHandler)
+        {
+            return await asyncHandler.HandleActionAsync(actionContext);
         }
 
-        var actionContext = new ActionContext<TGameContext, TAction>(playerId, action, GameContext, this);
-        await handler.HandleActionAsync(actionContext);
-        return new Success();
-
+        return new ActionFailed("The action was not valid in this context.");
     }
 
     public async Task SetStateAsync<TNewState>()
