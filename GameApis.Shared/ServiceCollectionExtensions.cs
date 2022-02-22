@@ -1,4 +1,4 @@
-﻿using GameApis.Shared.Services;
+﻿using GameApis.Shared.GameState.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameApis.Shared;
@@ -10,11 +10,11 @@ public static class ServiceCollectionExtensions
         services.AddTransient(typeof(IGameActionHandler<>), typeof(GameActionHandler<>));
         services.AddTransient(typeof(IGameStateResolver<>), typeof(GameStateResolver<>));
 
-        var gameStateRegistry = new GameStateRegistry();
+        var gameStateRegistry = new GameRegistry();
         var builder = new GameApiBuilder(gameStateRegistry, services);
         gameApiBuilder(builder);
 
-        services.AddSingleton<IGameStateRegistry>(gameStateRegistry);
+        services.AddSingleton<IGameRegistry>(gameStateRegistry);
         return services;
     }
 }

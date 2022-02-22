@@ -2,7 +2,7 @@
 using OneOf;
 using OneOf.Types;
 
-namespace GameApis.Shared.Services;
+namespace GameApis.Shared.GameState.Services;
 
 public interface IGameStateResolver<TGameContext>
 {

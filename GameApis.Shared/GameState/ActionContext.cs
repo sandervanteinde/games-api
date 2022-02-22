@@ -1,3 +1,5 @@
-﻿namespace GameApis.Shared.GameState;
+﻿using GameApis.Shared.Players;
 
-public record ActionContext<TGameContext, TAction>(TAction Action, TGameContext Context, GameEngine<TGameContext> Engine);
+namespace GameApis.Shared.GameState;
+
+public record ActionContext<TGameContext, TAction>(PlayerId PlayerPerformingAction, TAction Action, TGameContext Context, GameEngine<TGameContext> Engine);

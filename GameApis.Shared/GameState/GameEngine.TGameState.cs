@@ -1,4 +1,5 @@
 ﻿using GameApis.Shared.Dtos;
+using GameApis.Shared.Players;
 using OneOf;
 using OneOf.Types;
 
@@ -21,7 +22,7 @@ public class GameEngine<TGameContext>
         GameContext = gameContext;
     }
 
-    internal async Task<OneOf<Success, ActionFailed>> HandleActionAsync<TAction>(TAction action)
+    internal async Task<OneOf<Success, ActionFailed>> HandleActionAsync<TAction>(PlayerId playerId, TAction action)
         where TAction : IAction
     {
         if (GameState is not IHandleGameAction<TGameContext, TAction> handler)
@@ -29,7 +30,7 @@ public class GameEngine<TGameContext>
             return new ActionFailed("The action was invaid in the current game state");
         }
 
-        var actionContext = new ActionContext<TGameContext, TAction>(action, GameContext, this);
+        var actionContext = new ActionContext<TGameContext, TAction>(playerId, action, GameContext, this);
         await handler.HandleActionAsync(actionContext);
         return new Success();
 

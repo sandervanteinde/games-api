@@ -1,18 +1,17 @@
-﻿using GameApis.Shared.GameState;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using OneOf;
 using OneOf.Types;
 
-namespace GameApis.Shared.Services;
+namespace GameApis.Shared.GameState.Services;
 
 internal class GameStateResolver<TGameContext> : IGameStateResolver<TGameContext>
 {
     private readonly IServiceProvider serviceProvider;
-    private readonly IGameStateRegistry gameStateRegistry;
+    private readonly IGameRegistry gameStateRegistry;
 
     public GameStateResolver(
         IServiceProvider serviceProvider,
-        IGameStateRegistry gameStateRegistry
+        IGameRegistry gameStateRegistry
     )
     {
         this.serviceProvider = serviceProvider;

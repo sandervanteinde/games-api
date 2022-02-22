@@ -1,6 +1,6 @@
 ﻿using GameApis.Shared;
 using GameApis.Shared.GameState;
-using GameApis.Shared.Services;
+using GameApis.Shared.GameState.Services;
 using MongoDB.Driver;
 using OneOf;
 using OneOf.Types;

@@ -1,6 +1,6 @@
-﻿using GameApis.Shared;
-using GameApis.Shared.GameState;
+﻿using GameApis.Shared.GameState;
+using GameApis.Shared.Players;
 
 namespace GameApis.TicTacToe.GameState.Actions;
 
-public record JoinPlayerAction(PlayerId PlayerId) : IAction;
+public record JoinPlayerAction(ExternalPlayerId PlayerId) : IAction;

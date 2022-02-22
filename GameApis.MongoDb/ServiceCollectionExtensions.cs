@@ -1,4 +1,5 @@
-﻿using GameApis.Shared.Services;
+﻿using GameApis.Shared.GameState.Services;
+using GameApis.Shared.Players.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Bson;
@@ -25,6 +26,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTransient(typeof(IGameRepository<>), typeof(MongoGameRepository<>));
+        services.AddTransient<IPlayerRepository, PlayerRepository>();
 
         return services;
     }

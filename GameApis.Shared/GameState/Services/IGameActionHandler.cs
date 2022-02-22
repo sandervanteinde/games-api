@@ -1,11 +1,10 @@
 ﻿using GameApis.Shared.Dtos;
-using GameApis.Shared.GameState;
 using OneOf;
 using OneOf.Types;
 
-namespace GameApis.Shared.Services;
+namespace GameApis.Shared.GameState.Services;
 
-internal interface IGameActionHandler<TGameContext>
+public interface IGameActionHandler<TGameContext>
 {
     Task<OneOf<Success, ActionFailed>> HandleGameActionAsync(GameId gameId, IAction gameAction);
 }

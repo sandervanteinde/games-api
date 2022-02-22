@@ -3,9 +3,9 @@ using GameApis.TicTacToe.GameState.Actions;
 
 namespace GameApis.TicTacToe.GameState.States;
 
-public class WaitForPlayersContext :
-    IGameState<TicTacToeContext>,
-    IHandleGameAction<TicTacToeContext, JoinPlayerAction>
+public class WaitForPlayersState
+    : IGameState<TicTacToeContext>
+    , IHandleGameAction<TicTacToeContext, JoinPlayerAction>
 {
     public string GetDescription(TicTacToeContext gameContext)
     {
