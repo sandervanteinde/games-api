@@ -14,6 +14,9 @@ public class GameEngine<TGameContext>
         TGameContext gameContext
     )
     {
+        ArgumentNullException.ThrowIfNull(gameState);
+        ArgumentNullException.ThrowIfNull(gameContext);
+
         GameState = gameState;
         GameContext = gameContext;
     }

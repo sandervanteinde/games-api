@@ -1,6 +1,9 @@
-﻿using StronglyTypedIds;
+﻿namespace GameApis.Shared;
 
-namespace GameApis.Shared;
-
-[StronglyTypedId(converters: StronglyTypedIdConverter.SystemTextJson, backingType: StronglyTypedIdBackingType.Guid)]
-public partial struct GameId { }
+public record struct GameId(Guid Value)
+{
+    public static GameId New()
+    {
+        return new(Guid.NewGuid());
+    }
+};
