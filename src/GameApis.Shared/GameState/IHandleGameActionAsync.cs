@@ -10,11 +10,3 @@ public interface IHandleGameActionAsync<TGameContext, TAction>
 {
     Task<OneOf<Success, ActionFailed>> HandleActionAsync(ActionContext<TGameContext, TAction> actionContext);
 }
-
-public interface IHandleGameAction<TGameContext, TAction>
-    where TGameContext : IGameContext
-    where TAction : IAction
-{
-    OneOf<Success, ActionFailed> HandleAction(ActionContext<TGameContext, TAction> actionContext);
-
-}

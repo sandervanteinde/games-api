@@ -18,7 +18,8 @@ internal class GameActionHandler<TGameContext> : IGameActionHandler<TGameContext
         IGameRepository<TGameContext> gameRepository,
         IInternalPlayerIdResolver playerIdResolver,
         IPlayerRepository playerRepository,
-        ILogger<GameActionHandler<TGameContext>> logger)
+        ILogger<GameActionHandler<TGameContext>> logger
+    )
     {
         this.gameRepository = gameRepository;
         this.playerIdResolver = playerIdResolver;
