@@ -7,11 +7,19 @@ using GameApis.TicTacToe.GameState;
 using GameApis.WebHost;
 using GameApis.WebHost.Models;
 using GameApis.WebHost.Services;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.OpenApi.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
 builder.Services.AddSwaggerGen(opts =>
 {
     var playerIdSecurityScheme = new OpenApiSecurityScheme

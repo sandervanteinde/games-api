@@ -1,4 +1,5 @@
-﻿using GameApis.MongoDb.Serializers;
+﻿using GameApis.MongoDb.Conventions;
+using GameApis.MongoDb.Serializers;
 using GameApis.Shared.GameState.Services;
 using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Options;
 using MongoDB.Driver;
 
 namespace GameApis.MongoDb;
@@ -18,7 +20,8 @@ public static class ServiceCollectionExtensions
         // Set up MongoDB conventions
         var pack = new ConventionPack
         {
-            new EnumRepresentationConvention(BsonType.String)
+            new EnumRepresentationConvention(BsonType.String),
+            new DictionaryRepresentationConvention(DictionaryRepresentation.ArrayOfDocuments)
         };
         ConventionRegistry.Register("EnumStringConvention", pack, t => true);
 

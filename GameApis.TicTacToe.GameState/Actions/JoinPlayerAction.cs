@@ -2,4 +2,4 @@
 
 namespace GameApis.TicTacToe.GameState.Actions;
 
-public record JoinPlayerAction() : IAction;
+public record JoinPlayerAction : IAction;

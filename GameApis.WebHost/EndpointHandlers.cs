@@ -6,7 +6,7 @@ using System.Reflection;
 namespace GameApis.WebHost;
 
 /// <summary>
-/// Utility for making typed endpoint builders for genericly set up games
+/// Utility for making typed endpoint builders for generically setting up games
 /// </summary>
 internal static class EndpointHandlers
 {
@@ -59,7 +59,11 @@ internal static class EndpointHandlers
         {
             var gameEngineResult = await gameRepository.GetGameEngineAsync(new(gameId));
             return gameEngineResult.Match(
-                gameEngine => Results.Ok(gameEngine.GameContext),
+                gameEngine => Results.Ok(new
+                {
+                    Game = gameEngine.GameContext,
+                    State = gameEngine.GameState.GetDescription(gameEngine.GameContext)
+                }),
                 notFound => Results.NotFound()
             );
         };

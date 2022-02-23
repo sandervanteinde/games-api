@@ -39,15 +39,10 @@ public class GameEngine<TGameContext>
         return new ActionFailed("The action was not valid in this context.");
     }
 
-    public async Task SetStateAsync<TNewState>()
+    public void SetState<TNewState>()
         where TNewState : IGameState<TGameContext>, new()
     {
         var newState = new TNewState();
-        if (GameState is IOnLeaveActiveGameState<TGameContext> onLeave)
-        {
-            await onLeave.OnLeaveActiveGameStateAsync(newState, GameContext);
-        }
-
         GameState = newState;
     }
 }

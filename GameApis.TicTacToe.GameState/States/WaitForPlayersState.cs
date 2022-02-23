@@ -9,13 +9,14 @@ namespace GameApis.TicTacToe.GameState.States;
 public class WaitForPlayersState
     : IGameState<TicTacToeContext>
     , IHandleGameAction<TicTacToeContext, JoinPlayerAction>
+    , IHandleGameAction<TicTacToeContext, StartGameAction>
 {
     public string GetDescription(TicTacToeContext gameContext)
     {
         return gameContext switch
         {
-            { PlayerOneId: null } => "Waiting for player one to join.",
-            { PlayerTwoId: null } => "Waiting for player two to join.",
+            { PlayerUsingX: null } => "Waiting for player one to join.",
+            { PlayerUsingO: null } => "Waiting for player two to join.",
             _ => "Waiting for game to start"
         };
     }
@@ -24,27 +25,44 @@ public class WaitForPlayersState
     {
         var context = actionContext.Context;
         var playerId = actionContext.PlayerPerformingAction.ExternalId;
-        if (context.PlayerOneId is null)
+        if (context.PlayerUsingX is null)
         {
-            context.PlayerOneId = playerId;
+            context.PlayerUsingX = playerId;
             return new Success();
         }
-        if (context.PlayerOneId == playerId)
+        if (context.PlayerUsingX == playerId)
         {
             return AlreadyInLobby();
         }
-        if (context.PlayerTwoId is null)
+        if (context.PlayerUsingO is null)
         {
-            context.PlayerTwoId = playerId;
+            context.PlayerUsingO = playerId;
             return new Success();
         }
-        if (context.PlayerTwoId == playerId)
+        if (context.PlayerUsingO == playerId)
         {
             return AlreadyInLobby();
         }
 
         return new ActionFailed("The lobby is full.");
 
-        static ActionFailed AlreadyInLobby() => new ActionFailed("Player is already in the game lobby.");
+        static ActionFailed AlreadyInLobby() => new("Player is already in the game lobby.");
+    }
+
+    public OneOf<Success, ActionFailed> HandleAction(ActionContext<TicTacToeContext, StartGameAction> actionContext)
+    {
+        var context = actionContext.Context;
+        if (context is { PlayerUsingX: not null, PlayerUsingO: not null })
+        {
+            var playerStarting = actionContext.Action.PlayerStarting
+                ?? (Random.Shared.Next(2) == 0
+                    ? Models.PlayerTurn.PlayerX
+                    : Models.PlayerTurn.PlayerO);
+            context.PlayerTurn = playerStarting;
+            actionContext.Engine.SetState<PlayerTurnState>();
+            return new Success();
+        }
+
+        return new ActionFailed("There are not enough players.");
     }
 }

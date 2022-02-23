@@ -51,4 +51,44 @@ public record struct PlayerId(InternalPlayerId InternalId, ExternalPlayerId Exte
     {
         return playerId.ExternalId != externalPlayerId;
     }
+
+    public static bool operator ==(PlayerId playerId, InternalPlayerId? internalPlayerId)
+    {
+        return playerId.InternalId == internalPlayerId;
+    }
+
+    public static bool operator ==(InternalPlayerId? internalPlayerId, PlayerId playerId)
+    {
+        return playerId.InternalId == internalPlayerId;
+    }
+
+    public static bool operator !=(PlayerId playerId, InternalPlayerId? internalPlayerId)
+    {
+        return playerId.InternalId != internalPlayerId;
+    }
+
+    public static bool operator !=(InternalPlayerId? internalPlayerId, PlayerId playerId)
+    {
+        return playerId.InternalId != internalPlayerId;
+    }
+
+    public static bool operator ==(PlayerId playerId, ExternalPlayerId? externalPlayerId)
+    {
+        return playerId.ExternalId == externalPlayerId;
+    }
+
+    public static bool operator ==(ExternalPlayerId? externalPlayerId, PlayerId playerId)
+    {
+        return playerId.ExternalId == externalPlayerId;
+    }
+
+    public static bool operator !=(PlayerId playerId, ExternalPlayerId? externalPlayerId)
+    {
+        return playerId.ExternalId != externalPlayerId;
+    }
+
+    public static bool operator !=(ExternalPlayerId? externalPlayerId, PlayerId playerId)
+    {
+        return playerId.ExternalId != externalPlayerId;
+    }
 }
