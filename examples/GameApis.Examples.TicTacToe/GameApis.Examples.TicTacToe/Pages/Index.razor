@@ -1,0 +1,67 @@
+﻿@page "/"
+@using GameApis.Examples.TicTacToe.Client
+@using GameApis.Examples.TicTacToe.Services
+@inject IPlayerIdAccessor PlayerIdAccessor
+@inject TicTacToeClient TicTacToeClient
+@inject NavigationManager Navigation
+
+<Form Model="@form" LabelColSpan="8" WrapperColSpan="16" OnFinish="OnFinish">
+    <FormItem>
+        <Input Placeholder="Player name" @bind-Value="@context.PlayerName" />
+    </FormItem>
+
+    <FormItem>
+        <Input Placeholder="Game id (empty for new game)" @bind-Value="@context.GameId"/>
+    </FormItem>
+
+    <FormItem>
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Submit
+        </Button>
+    </FormItem>
+</Form>
+
+@code {
+    public class Form
+    {
+        public string PlayerName { get; set; } = string.Empty;
+        public string GameId { get; set; } = string.Empty;
+    }
+
+    private Form form = new();
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "gameId")]
+    public Guid GameIdQueryParameter { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if(GameIdQueryParameter != Guid.Empty)
+        {
+            form.GameId = GameIdQueryParameter.ToString();
+        }
+    }
+
+    private async Task OnFinish()
+    {
+        var response = await TicTacToeClient.PlayerAsync(new CreateNewPlayer
+        {
+            PlayerName = form.PlayerName
+        });
+
+        PlayerIdAccessor.SetPlayerId(response);
+        Guid gameId;
+        if (string.IsNullOrWhiteSpace(form.GameId))
+        {
+            gameId = await TicTacToeClient.TicTacToeAsync();
+        }
+        else
+        {
+            gameId = Guid.Parse(form.GameId);
+            await TicTacToeClient.TicTacToe2Async(gameId.ToString());
+        }
+
+        await TicTacToeClient.JoinPlayerActionAsync(gameId.ToString(), new());
+        Navigation.NavigateTo($"/game/{gameId}");
+    }
+}

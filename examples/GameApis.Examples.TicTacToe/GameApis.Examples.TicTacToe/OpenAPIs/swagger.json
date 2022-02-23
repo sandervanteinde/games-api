@@ -1,0 +1,317 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "GameApis.WebHost",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/tic-tac-toe": {
+      "post": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tic-tac-toe/{gameId}": {
+      "get": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicTacToeContext"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/tic-tac-toe/{gameId}/actions/JoinPlayerAction": {
+      "post": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinPlayerAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tic-tac-toe/{gameId}/actions/PerformPlayAction": {
+      "post": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PerformPlayAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/tic-tac-toe/{gameId}/actions/StartGameAction": {
+      "post": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartGameAction"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/player": {
+      "post": {
+        "tags": [
+          "GameApis.WebHost"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNewPlayer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerId"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BoardPositions": {
+        "enum": [
+          "topLeft",
+          "top",
+          "topRight",
+          "left",
+          "middle",
+          "right",
+          "bottomLeft",
+          "bottom",
+          "bottomRight"
+        ],
+        "type": "string"
+      },
+      "BoardState": {
+        "enum": [
+          "x",
+          "o"
+        ],
+        "type": "string"
+      },
+      "CreateNewPlayer": {
+        "type": "object",
+        "properties": {
+          "playerName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ExternalPlayerId": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "InternalPlayerId": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "additionalProperties": false
+      },
+      "JoinPlayerAction": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "PerformPlayAction": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "$ref": "#/components/schemas/BoardPositions"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerId": {
+        "type": "object",
+        "properties": {
+          "internalId": {
+            "$ref": "#/components/schemas/InternalPlayerId"
+          },
+          "externalId": {
+            "$ref": "#/components/schemas/ExternalPlayerId"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlayerTurn": {
+        "enum": [
+          "none",
+          "playerX",
+          "playerO"
+        ],
+        "type": "string"
+      },
+      "StartGameAction": {
+        "type": "object",
+        "properties": {
+          "playerStarting": {
+            "$ref": "#/components/schemas/PlayerTurn"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TicTacToeContext": {
+        "type": "object",
+        "properties": {
+          "playerUsingX": {
+            "$ref": "#/components/schemas/ExternalPlayerId"
+          },
+          "playerUsingO": {
+            "$ref": "#/components/schemas/ExternalPlayerId"
+          },
+          "playerTurn": {
+            "$ref": "#/components/schemas/PlayerTurn"
+          },
+          "playedPositions": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BoardState"
+            },
+            "nullable": true
+          },
+          "winner": {
+            "$ref": "#/components/schemas/PlayerTurn"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "PlayerId": {
+        "type": "apiKey",
+        "name": "X-Player-Id",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "PlayerId": [ ]
+    }
+  ]
+}
