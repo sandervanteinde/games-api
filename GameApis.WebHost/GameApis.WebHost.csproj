@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameApis.MongoDb\GameApis.MongoDb.csproj" />
+    <ProjectReference Include="..\GameApis.Shared\GameApis.Shared.csproj" />
+    <ProjectReference Include="..\GameApis.TicTacToe.GameState\GameApis.TicTacToe.GameState.csproj" />
+  </ItemGroup>
+
+</Project>
