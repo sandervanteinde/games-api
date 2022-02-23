@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GameApis.MongoDb\GameApis.MongoDb.csproj" />
     <ProjectReference Include="..\GameApis.Shared\GameApis.Shared.csproj" />
-    <ProjectReference Include="..\GameApis.TicTacToe.Endpoints\GameApis.TicTacToe.Endpoints.csproj" />
+    <ProjectReference Include="..\GameApis.TicTacToe.GameState\GameApis.TicTacToe.GameState.csproj" />
   </ItemGroup>
 
 </Project>

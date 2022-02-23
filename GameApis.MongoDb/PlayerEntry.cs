@@ -1,11 +1,12 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using GameApis.Shared.Players;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace GameApis.MongoDb;
 
 public class PlayerEntry
 {
     [BsonId]
-    public Guid InternalId { get; set; }
-    public Guid ExternalId { get; set; }
+    public InternalPlayerId InternalId { get; set; }
+    public ExternalPlayerId ExternalId { get; set; }
     public string Name { get; set; } = default!;
 }

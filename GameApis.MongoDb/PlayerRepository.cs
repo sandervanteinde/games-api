@@ -17,7 +17,7 @@ internal class PlayerRepository : IPlayerRepository
     public async Task<OneOf<Player, NotFound>> GetPlayerByInternalIdAsync(InternalPlayerId internalId)
     {
         var collection = GetCollection();
-        var cursor = await collection.FindAsync(player => player.InternalId == internalId.Value);
+        var cursor = await collection.FindAsync(player => player.InternalId == internalId);
         var foundPlayer = await cursor.FirstOrDefaultAsync();
         if (foundPlayer is null)
         {
@@ -26,8 +26,8 @@ internal class PlayerRepository : IPlayerRepository
 
         return new Player(
             new PlayerId(
-                new InternalPlayerId(foundPlayer.InternalId),
-                new ExternalPlayerId(foundPlayer.ExternalId)
+                foundPlayer.InternalId,
+                foundPlayer.ExternalId
             ),
             foundPlayer.Name
         );
@@ -38,8 +38,8 @@ internal class PlayerRepository : IPlayerRepository
         var collection = GetCollection();
         var entry = new PlayerEntry
         {
-            ExternalId = player.Id.ExternalId.Value,
-            InternalId = player.Id.InternalId.Value,
+            ExternalId = player.Id.ExternalId,
+            InternalId = player.Id.InternalId,
             Name = player.Name
         };
 

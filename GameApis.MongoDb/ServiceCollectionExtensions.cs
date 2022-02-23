@@ -1,8 +1,11 @@
-﻿using GameApis.Shared.GameState.Services;
+﻿using GameApis.MongoDb.Serializers;
+using GameApis.Shared.GameState.Services;
+using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
@@ -18,6 +21,15 @@ public static class ServiceCollectionExtensions
             new EnumRepresentationConvention(BsonType.String)
         };
         ConventionRegistry.Register("EnumStringConvention", pack, t => true);
+
+        BsonSerializer.RegisterSerializer(new GameIdSerializer());
+        BsonSerializer.RegisterSerializer(new ExternalPlayerIdSerializer());
+        BsonSerializer.RegisterSerializer(new InternalPlayerIdSerializer());
+
+        BsonClassMap.RegisterClassMap<Player>(opts =>
+        {
+            opts.MapIdMember(player => player.Id);
+        });
 
         services.TryAddSingleton<IMongoClient>(sp =>
         {

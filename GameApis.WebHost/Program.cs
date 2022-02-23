@@ -63,7 +63,7 @@ foreach (var entry in gameRegistry.EnumerateGameRegistryEntries())
     }
 }
 
-app.MapPost($"/api/player", async (CreateNewPlayer body, IPlayerRepository playerRepository) =>
+app.MapPost("/api/player", async (CreateNewPlayer body, IPlayerRepository playerRepository) =>
 {
     var playerId = PlayerId.New();
     var player = new Player(playerId, body.PlayerName);

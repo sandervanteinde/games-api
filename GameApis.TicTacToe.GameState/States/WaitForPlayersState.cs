@@ -23,11 +23,7 @@ public class WaitForPlayersState
     public OneOf<Success, ActionFailed> HandleAction(ActionContext<TicTacToeContext, JoinPlayerAction> actionContext)
     {
         var context = actionContext.Context;
-        var playerId = actionContext.Action.PlayerId;
-        if (actionContext.PlayerPerformingAction != playerId)
-        {
-            return new ActionFailed("Only the player executing the request can join the lobby.");
-        }
+        var playerId = actionContext.PlayerPerformingAction.ExternalId;
         if (context.PlayerOneId is null)
         {
             context.PlayerOneId = playerId;
