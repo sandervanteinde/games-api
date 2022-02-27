@@ -7,6 +7,6 @@ public record struct InternalPlayerId(Guid Value)
 {
     public static InternalPlayerId New()
     {
-        return new(Guid.NewGuid());
+        return new InternalPlayerId(Guid.NewGuid());
     }
 }

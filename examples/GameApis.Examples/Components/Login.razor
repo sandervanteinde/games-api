@@ -1,0 +1,35 @@
+﻿<p>Welcome to the Game API.</p>
+<p>You are not yet logged in</p>
+
+<Form Model="@_form" LabelColSpan="8" WrapperColSpan="16" OnFinish="OnFinish">
+    <FormItem>
+        <Input Placeholder="Player name" @bind-Value="@context.PlayerName"/>
+    </FormItem>
+
+    <FormItem>
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Submit
+        </Button>
+    </FormItem>
+</Form>
+
+@code {
+    private CreateNewPlayer _form = new();
+
+    [Inject]
+    public GameApiClient GameApiClient { get; set; } = null!;
+
+    [Inject]
+    public IPlayerIdAccessor PlayerIdAccessor { get; set; } = null!;
+
+    [CascadingParameter]
+    public EnsurePlayerId EnsurePlayerId { get; set; } = null!;
+
+    private async Task OnFinish()
+    {
+        var playerId = await GameApiClient.CreatePlayerAsync(_form);
+        await PlayerIdAccessor.SetPlayerIdAsync(playerId);
+        await EnsurePlayerId.RefreshAsync();
+    }
+
+}

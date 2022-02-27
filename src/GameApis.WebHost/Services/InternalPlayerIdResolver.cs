@@ -15,7 +15,7 @@ public class InternalPlayerIdResolver : IInternalPlayerIdResolver
     public InternalPlayerIdResolver(IHttpContextAccessor httpContextAccessor)
     {
         this.httpContextAccessor = httpContextAccessor;
-        _playerId = new(ResolveInternalPlayerId);
+        _playerId = new Lazy<OneOf<InternalPlayerId, NotFound>>(ResolveInternalPlayerId);
     }
 
     public Task<OneOf<InternalPlayerId, NotFound>> ResolveInternalPlayerIdAsync()

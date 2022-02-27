@@ -1,5 +1,6 @@
 using GameApis.MongoDb;
 using GameApis.Shared;
+using GameApis.Shared.Dtos;
 using GameApis.Shared.GameState.Services;
 using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
@@ -29,26 +30,23 @@ builder.Services.AddSwaggerGen(opts =>
 {
     var playerIdSecurityScheme = new OpenApiSecurityScheme
     {
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Name = "X-Player-Id"
+        In = ParameterLocation.Header, Type = SecuritySchemeType.ApiKey, Name = "X-Player-Id"
     };
     opts.AddSecurityDefinition("PlayerId", playerIdSecurityScheme);
     opts.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        [new OpenApiSecurityScheme
         {
-            Reference = new OpenApiReference
+            new OpenApiSecurityScheme
             {
-                Type = ReferenceType.SecurityScheme,
-                Id = "PlayerId"
-            }
-        }] = new List<string>()
+                Reference = new OpenApiReference {Type = ReferenceType.SecurityScheme, Id = "PlayerId"}
+            },
+            new List<string>()
+        }
     });
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGameApisMongoDbPersistence(builder.Configuration.GetConnectionString("MongoDb"));
-builder.Services.AddGameApisServices(builder => builder.RegisterGameContext<TicTacToeContext>());
+builder.Services.AddGameApisServices(gameBuilder => gameBuilder.RegisterGameContext<TicTacToeContext>());
 builder.Services.AddScoped<IInternalPlayerIdResolver, InternalPlayerIdResolver>();
 
 var app = builder.Build();
@@ -56,32 +54,80 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.RoutePrefix = string.Empty;
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "GameApis.WebHost v1");
+    });
 }
+
 app.UseCors(opts => opts.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
 
-// app.UseTicTacToeEndpoints();
 var gameRegistry = app.Services.GetRequiredService<IGameRegistry>();
+var getGameContextType = typeof(GetGameResult<>);
 foreach (var entry in gameRegistry.EnumerateGameRegistryEntries())
 {
-    app.MapPost($"/api/{entry.Identifier}", EndpointHandlers.HandleCreateGame(entry.GameContextType, entry.InitialState));
+    app.MapPost($"/api/{entry.Identifier}",
+            EndpointHandlers.HandleCreateGame(entry.GameContextType, entry.InitialState))
+        .Produces(200, typeof(Guid))
+        .WithName($"Create{entry.Identifier}Game")
+        .WithTags(entry.Identifier);
+
     app.MapGet($"/api/{entry.Identifier}/{{gameId:guid}}", EndpointHandlers.HandleGetGame(entry.GameContextType))
-        .Produces(200, entry.GameContextType)
-        .Produces(404);
+        .Produces(200, getGameContextType.MakeGenericType(entry.GameContextType))
+        .Produces(404)
+        .WithName($"Get{entry.Identifier}GameById")
+        .WithTags(entry.Identifier);
 
     foreach (var action in entry.Actions)
     {
-        app.MapPost($"/api/{entry.Identifier}/{{gameId:guid}}/actions/{action.Name}", EndpointHandlers.HandleActionEndpoint(entry.GameContextType, action))
-            .Produces(201);
+        app.MapPost($"/api/{entry.Identifier}/{{gameId:guid}}/actions/{action.Name}",
+                EndpointHandlers.HandleActionEndpoint(entry.GameContextType, action))
+            .Produces(201)
+            .Produces(400, typeof(ActionFailed))
+            .WithName($"Perform{action.Name}On{entry.Identifier}Game")
+            .WithTags(entry.Identifier);
     }
 }
 
 app.MapPost("/api/player", async (CreateNewPlayer body, IPlayerRepository playerRepository) =>
-{
-    var playerId = PlayerId.New();
-    var player = new Player(playerId, body.PlayerName);
-    await playerRepository.StorePlayerAsyc(player);
-    return player.Id;
-});
+    {
+        var playerId = PlayerId.New();
+        var player = new Player(playerId, body.PlayerName);
+        await playerRepository.StorePlayerAsyc(player);
+        return player.Id;
+    })
+    .WithName("CreatePlayer")
+    .WithTags("Players");
+
+app.MapPost("/api/player/exists", async (QueryPlayerInternalId body, IPlayerRepository playerRepository) =>
+    {
+        var internalPlayerId = new InternalPlayerId(body.InternalPlayerId);
+        var player = await playerRepository.GetPlayerByInternalIdAsync(internalPlayerId);
+        return player.Match(
+            playerResult => Results.Ok(playerResult.Id),
+            _ => Results.NotFound()
+        );
+    })
+    .Produces(404)
+    .Produces(200, typeof(PlayerId))
+    .WithName("GetPlayerByInternalId")
+    .WithTags("Players");
+
+app.MapGet("/api/player/{playerId:guid}", async (Guid playerId, IPlayerRepository playerRepository) =>
+    {
+        var externalPlayerId = new ExternalPlayerId(playerId);
+        var player = await playerRepository.GetPlayerByExternalIdAsync(externalPlayerId);
+
+        return player.Match(
+            playerResult => Results.Ok(new PlayerDto(playerResult.Name, playerResult.Id.ExternalId)),
+            _ => Results.NotFound()
+        );
+    })
+    .Produces(404)
+    .Produces(200, typeof(PlayerDto))
+    .WithName("GetPlayerByExternalId")
+    .WithTags("Players");
+
 app.Run();

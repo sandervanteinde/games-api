@@ -7,6 +7,6 @@ public record struct ExternalPlayerId(Guid Value)
 {
     public static ExternalPlayerId New()
     {
-        return new(Guid.NewGuid());
+        return new ExternalPlayerId(Guid.NewGuid());
     }
 }

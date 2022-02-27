@@ -16,12 +16,12 @@ public class ActionResult
 
     public static ActionResult Success()
     {
-        return new();
+        return new ActionResult();
     }
 
     public static ActionResult Fail(string reason)
     {
-        return new(reason);
+        return new ActionResult(reason);
     }
 
     public static implicit operator Task<ActionResult>(ActionResult result)

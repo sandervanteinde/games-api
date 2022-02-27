@@ -1,12 +1,12 @@
-﻿using GameApis.Shared;
-using GameApis.Shared.GameState;
+﻿using GameApis.Shared.GameState;
 using GameApis.Shared.GameState.Services;
+using GameApis.WebHost.Models;
 using System.Reflection;
 
 namespace GameApis.WebHost;
 
 /// <summary>
-/// Utility for making typed endpoint builders for generically setting up games
+///     Utility for making typed endpoint builders for generically setting up games
 /// </summary>
 internal static class EndpointHandlers
 {
@@ -31,10 +31,10 @@ internal static class EndpointHandlers
     {
         return async (TAction action, Guid gameId, IGameActionHandler<TGameContext> actionHandler) =>
         {
-            var actionResult = await actionHandler.HandleGameActionAsync(new(gameId), action);
+            var actionResult = await actionHandler.HandleGameActionAsync(new GameId(gameId), action);
             return actionResult.Match(
-                success => Results.NoContent(),
-                actionFailed => Results.BadRequest(actionFailed)
+                _ => Results.NoContent(),
+                Results.BadRequest
             );
         };
     }
@@ -57,14 +57,11 @@ internal static class EndpointHandlers
     {
         return async (Guid gameId, IGameRepository<TGameContext> gameRepository) =>
         {
-            var gameEngineResult = await gameRepository.GetGameEngineAsync(new(gameId));
+            var gameEngineResult = await gameRepository.GetGameEngineAsync(new GameId(gameId));
             return gameEngineResult.Match(
-                gameEngine => Results.Ok(new
-                {
-                    Game = gameEngine.GameContext,
-                    State = gameEngine.GameState.GetDescription(gameEngine.GameContext)
-                }),
-                notFound => Results.NotFound()
+                gameEngine => Results.Ok(new GetGameResult<TGameContext>(gameEngine.GameContext,
+                    gameEngine.GameState.GetDescription(gameEngine.GameContext))),
+                _ => Results.NotFound()
             );
         };
     }
@@ -72,7 +69,7 @@ internal static class EndpointHandlers
     private static Delegate CreateDelegateForMethod(string methodName, params Type[] genericArguments)
     {
         var method = typeof(EndpointHandlers).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic)
-            ?? throw new InvalidOperationException($"Did not find {nameof(methodName)} method");
+                     ?? throw new InvalidOperationException($"Did not find {nameof(methodName)} method");
         var genericMethod = method.MakeGenericMethod(genericArguments);
         return (Delegate)genericMethod.Invoke(null, Array.Empty<object>())!;
     }

@@ -1,9 +1,9 @@
-﻿namespace GameApis.Shared;
+﻿namespace GameApis.Shared.GameState;
 
 public record struct GameId(Guid Value)
 {
     public static GameId New()
     {
-        return new(Guid.NewGuid());
+        return new GameId(Guid.NewGuid());
     }
 };

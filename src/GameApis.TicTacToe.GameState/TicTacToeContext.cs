@@ -6,12 +6,13 @@ using GameApis.TicTacToe.GameState.States;
 
 namespace GameApis.TicTacToe.GameState;
 
-[Game("tic-tac-toe", typeof(WaitForPlayersState))]
+[Game("TicTacToe", typeof(WaitForPlayersState))]
 public class TicTacToeContext : IGameContext
 {
     public ExternalPlayerId? PlayerUsingX { get; set; }
     public ExternalPlayerId? PlayerUsingO { get; set; }
     public PlayerTurn PlayerTurn { get; set; } = PlayerTurn.None;
-    public Dictionary<BoardPositions, BoardState> PlayedPositions { get; set; } = new();
+    public Dictionary<BoardPositions, BoardState> PlayedPositions { get; set; } =
+        new Dictionary<BoardPositions, BoardState>();
     public PlayerTurn Winner { get; set; } = PlayerTurn.None;
 }

@@ -46,7 +46,7 @@ public class WaitForPlayersState
 
         return new ActionFailed("The lobby is full.");
 
-        static ActionFailed AlreadyInLobby() => new("Player is already in the game lobby.");
+        static ActionFailed AlreadyInLobby() => new ActionFailed("Player is already in the game lobby.");
     }
 
     public OneOf<Success, ActionFailed> HandleAction(ActionContext<TicTacToeContext, StartGameAction> actionContext)

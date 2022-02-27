@@ -1,0 +1,21 @@
+﻿@page "/{gameIdentifier}"
+
+<h1>Would you like to join or host a game?</h1>
+
+<div class="host-or-join">
+    <div class="host-or-join__item">
+        <Button Disabled="_isVerifyingGame" OnClick="StartHostGame">
+            Host
+        </Button>
+    </div>
+    <div class="host-or-join__item">
+        <Form Loading="_isVerifyingGame" @ref="_antForm" Model="_form" OnFinish="OnFinish">
+            <FormItem Label="Game Id">
+                <Input @bind-Value="context.GameId"/>
+            </FormItem>
+            <Button HtmlType="submit">
+                Join
+            </Button>
+        </Form>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+﻿@page "/"
+
+<h1>Please pick a game</h1>
+
+<GameApiGrid Items="_gameEntries">
+    <GridItem>
+        <div @onclick="() => SelectGame(context)">
+            <Card Hoverable="true">
+                <CardMeta Title="@context.Name" Description="@context.Description"></CardMeta>
+            </Card>
+        </div>
+    </GridItem>
+</GameApiGrid>

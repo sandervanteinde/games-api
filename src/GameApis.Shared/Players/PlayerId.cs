@@ -9,7 +9,7 @@ public record struct PlayerId(InternalPlayerId InternalId, ExternalPlayerId Exte
 {
     public static PlayerId New()
     {
-        return new(InternalPlayerId.New(), ExternalPlayerId.New());
+        return new PlayerId(InternalPlayerId.New(), ExternalPlayerId.New());
     }
 
     public static bool operator ==(PlayerId playerId, InternalPlayerId internalPlayerId)

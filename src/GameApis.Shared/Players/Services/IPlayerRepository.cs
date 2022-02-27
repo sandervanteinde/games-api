@@ -7,4 +7,5 @@ public interface IPlayerRepository
 {
     Task<OneOf<Player, NotFound>> GetPlayerByInternalIdAsync(InternalPlayerId internalId);
     Task StorePlayerAsyc(Player player);
+    Task<OneOf<Player, NotFound>> GetPlayerByExternalIdAsync(ExternalPlayerId externalPlayerId);
 }

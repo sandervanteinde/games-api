@@ -5,6 +5,7 @@ using GameApis.TicTacToe.GameState.Actions;
 using GameApis.TicTacToe.GameState.Models;
 using OneOf;
 using OneOf.Types;
+using System.ComponentModel;
 
 namespace GameApis.TicTacToe.GameState.States;
 
@@ -52,7 +53,7 @@ internal class PlayerTurnState
         {
             PlayerTurn.PlayerO => BoardState.O,
             PlayerTurn.PlayerX => BoardState.X,
-            _ => throw new InvalidOperationException("Unknown player turn")
+            _ => throw new InvalidEnumArgumentException(nameof(playerTurn), (int)playerTurn, typeof(PlayerTurn))
         });
 
         context.PlayerTurn = context.PlayerTurn is PlayerTurn.PlayerO

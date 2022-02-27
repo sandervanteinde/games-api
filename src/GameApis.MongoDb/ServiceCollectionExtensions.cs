@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
             new EnumRepresentationConvention(BsonType.String),
             new DictionaryRepresentationConvention(DictionaryRepresentation.ArrayOfDocuments)
         };
-        ConventionRegistry.Register("EnumStringConvention", pack, t => true);
+        ConventionRegistry.Register("EnumStringConvention", pack, _ => true);
 
         BsonSerializer.RegisterSerializer(new GameIdSerializer());
         BsonSerializer.RegisterSerializer(new ExternalPlayerIdSerializer());
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
             opts.MapIdMember(player => player.Id);
         });
 
-        services.TryAddSingleton<IMongoClient>(sp =>
+        services.TryAddSingleton<IMongoClient>(_ =>
         {
             var mongoClientSettings = MongoClientSettings.FromConnectionString(connectionString);
             return new MongoClient(mongoClientSettings);

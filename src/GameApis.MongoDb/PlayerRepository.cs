@@ -14,6 +14,20 @@ internal class PlayerRepository : IPlayerRepository
     {
         this.mongoClient = mongoClient;
     }
+
+    public async Task<OneOf<Player, NotFound>> GetPlayerByExternalIdAsync(ExternalPlayerId externalPlayerId)
+    {
+        var collection = GetCollection();
+        var cursor = await collection.FindAsync(player => player.ExternalId == externalPlayerId);
+        var foundPlayer = await cursor.FirstOrDefaultAsync();
+        if (foundPlayer is null)
+        {
+            return new NotFound();
+        }
+
+        return foundPlayer.ToPlayer();
+    }
+
     public async Task<OneOf<Player, NotFound>> GetPlayerByInternalIdAsync(InternalPlayerId internalId)
     {
         var collection = GetCollection();
@@ -24,13 +38,7 @@ internal class PlayerRepository : IPlayerRepository
             return new NotFound();
         }
 
-        return new Player(
-            new PlayerId(
-                foundPlayer.InternalId,
-                foundPlayer.ExternalId
-            ),
-            foundPlayer.Name
-        );
+        return foundPlayer.ToPlayer();
     }
 
     public Task StorePlayerAsyc(Player player)
