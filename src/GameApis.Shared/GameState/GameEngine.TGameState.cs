@@ -23,26 +23,23 @@ public class GameEngine<TGameContext>
         GameContext = gameContext;
     }
 
-    internal async Task<OneOf<Success, ActionFailed>> HandleActionAsync<TAction>(PlayerId playerId, TAction action)
-        where TAction : IAction
-    {
-        var actionContext = new ActionContext<TGameContext, TAction>(playerId, action, GameContext, this);
-        if (GameState is IHandleGameAction<TGameContext, TAction> handler)
-        {
-            return handler.HandleAction(actionContext);
-        }
-        if (GameState is IHandleGameActionAsync<TGameContext, TAction> asyncHandler)
-        {
-            return await asyncHandler.HandleActionAsync(actionContext);
-        }
-
-        return new ActionFailed("The action was not valid in this context.");
-    }
-
     public void SetState<TNewState>()
         where TNewState : IGameState<TGameContext>, new()
     {
         var newState = new TNewState();
         GameState = newState;
+    }
+
+    internal async Task<OneOf<Success, ActionFailed>> HandleActionAsync<TAction>(PlayerId playerId, TAction action)
+        where TAction : IAction
+    {
+        var actionContext = new ActionContext<TGameContext, TAction>(playerId, action, GameContext, this);
+
+        return GameState switch
+        {
+            IHandleGameAction<TGameContext, TAction> handler => handler.HandleAction(actionContext),
+            IHandleGameActionAsync<TGameContext, TAction> asyncHandler => await asyncHandler.HandleActionAsync(actionContext),
+            _ => new ActionFailed("The action was not valid in this context.")
+        }; 
     }
 }

@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  gameapis.webhost:
+    image: ${DOCKER_REGISTRY-}gameapiswebhost
+    build:
+      context: .
+      dockerfile: GameApis.WebHost/Dockerfile
+    ports:
+      - 5000:80
+      - 5001:443
+  mongo:
+    image: mongo:5.0.3
+    volumes:
+      - dbdata:/data/db
+    ports:
+      - 27017:27017
+volumes:
+  dbdata:

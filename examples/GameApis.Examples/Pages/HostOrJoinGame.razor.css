@@ -1,9 +1,0 @@
-.host-or-join {
-    display: flex;
-    width: 100%;
-}
-
-.host-or-join__item {
-    flex-grow: 1;
-    justify-content: center;
-}
