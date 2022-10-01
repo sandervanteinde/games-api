@@ -61,7 +61,7 @@ export class Login extends React.Component<Props, State> {
   private async onFinish(value: { name: string, remember: boolean; }): Promise<void> {
     this.setState({ doingRequest: true });
     try {
-      const response = await axios.post<{ internalId: { value: string; }, externalId: { value: string; }; }>('https://localhost:5001/api/player', { playerName: value.name });
+      const response = await axios.post<{ internalId: { value: string; }, externalId: { value: string; }; }>('/api/player', { playerName: value.name });
       this.setState({ doingRequest: false });
       this.props.loggedIn(response.data.internalId.value, value.remember);
     } catch {

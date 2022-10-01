@@ -1,7 +1,6 @@
 using GameApis.MongoDb;
 using GameApis.Shared;
 using GameApis.Shared.Dtos;
-using GameApis.Shared.GameState;
 using GameApis.Shared.GameState.Services;
 using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
@@ -31,7 +30,9 @@ builder.Services.AddSwaggerGen(opts =>
 {
     var playerIdSecurityScheme = new OpenApiSecurityScheme
     {
-        In = ParameterLocation.Header, Type = SecuritySchemeType.ApiKey, Name = "X-Player-Id"
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Name = "X-Player-Id"
     };
     opts.AddSecurityDefinition("PlayerId", playerIdSecurityScheme);
     opts.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -67,6 +68,13 @@ app.UseHttpsRedirection();
 
 var gameRegistry = app.Services.GetRequiredService<IGameRegistry>();
 var getGameContextType = typeof(GetGameResult<>);
+app.MapGet("/api/games", (IGameRegistry gameRegistry) =>
+    {
+        return Results.Ok(gameRegistry.EnumerateGameRegistryEntries().Select(entry => entry.Identifier));
+    })
+    .Produces(200, typeof(IEnumerable<string>))
+    .WithName("GetAvailableGames")
+    .WithTags("AvailableGames");
 foreach (var entry in gameRegistry.EnumerateGameRegistryEntries())
 {
     app.MapPost($"/api/{entry.Identifier}",
@@ -110,13 +118,16 @@ app.MapGet("/api/player/me", async (IInternalPlayerIdResolver resolver, IPlayerR
             {
                 var player = await playerRepo.GetPlayerByInternalIdAsync(internalPlayerId);
                 return player.Match(
-                    player => Results.Ok(player),
+                    player => Results.Ok(new PlayerDto(player.Name, player.Id.ExternalId.Value)),
                     notFound => Results.NotFound()
                 );
             },
             notFound => Task.FromResult(Results.Unauthorized())
         );
     })
+    .Produces(200, typeof(PlayerDto))
+    .Produces(401)
+    .Produces(404)
     .WithName("GetMe")
     .WithTags("Players");
 
@@ -125,12 +136,12 @@ app.MapPost("/api/player/exists", async (QueryPlayerInternalId body, IPlayerRepo
         var internalPlayerId = new InternalPlayerId(body.InternalPlayerId);
         var player = await playerRepository.GetPlayerByInternalIdAsync(internalPlayerId);
         return player.Match(
-            playerResult => Results.Ok(playerResult.Id),
+            playerResult => Results.Ok(new PlayerDto(playerResult.Name, playerResult.Id.ExternalId.Value)),
             _ => Results.NotFound()
         );
     })
     .Produces(404)
-    .Produces(200, typeof(PlayerId))
+    .Produces(200, typeof(PlayerDto))
     .WithName("GetPlayerByInternalId")
     .WithTags("Players");
 
@@ -140,7 +151,7 @@ app.MapGet("/api/player/{playerId:guid}", async (Guid playerId, IPlayerRepositor
         var player = await playerRepository.GetPlayerByExternalIdAsync(externalPlayerId);
 
         return player.Match(
-            playerResult => Results.Ok(new PlayerDto(playerResult.Name, playerResult.Id.ExternalId)),
+            playerResult => Results.Ok(new PlayerDto(playerResult.Name, playerResult.Id.ExternalId.Value)),
             _ => Results.NotFound()
         );
     })

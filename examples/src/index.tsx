@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { GamesLobby } from './games-lobby/GamesLobby';
 import { Root } from './Root';
 
 const router = createBrowserRouter([
@@ -10,7 +11,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <div>Hello world</div>
+        element: <GamesLobby/>
       }
     ]
   }

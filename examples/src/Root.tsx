@@ -1,15 +1,17 @@
 import { Layout } from 'antd';
 import { Content, Header } from 'antd/lib/layout/layout';
 import Title from 'antd/lib/typography/Title';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Login } from './login/Login';
+import { Player } from './models/player';
 import './Root.scss';
+import { PlayerContext } from './shared-state/player-context';
 
 interface State {
   userLoginToken: string | null;
-  isLoginTokenValidated: boolean;
+  playerContext: Player | null;
 }
 
 export class Root extends React.Component<{}, State> {
@@ -17,9 +19,10 @@ export class Root extends React.Component<{}, State> {
     super(props);
     this.state = {
       userLoginToken: localStorage.getItem('loginId'),
-      isLoginTokenValidated: false
+      playerContext: null
     };
     axios.interceptors.request.use(request => {
+      request.baseURL = 'https://localhost:5001';
       if (request.method === 'OPTIONS') {
         return request;
       }
@@ -33,9 +36,10 @@ export class Root extends React.Component<{}, State> {
   }
 
   render() {
-    const content = this.state.userLoginToken
-      ? (this.state.isLoginTokenValidated
-        ? <Outlet />
+    const { playerContext, userLoginToken } = this.state;
+    const content = userLoginToken
+      ? (playerContext !== null
+        ? <PlayerContext.Provider value={playerContext}><Outlet/></PlayerContext.Provider>
         : <div>Loading...</div>)
       : <Login
         loggedIn={(userId, shouldRemember) => this.onLogin(userId, shouldRemember)}
@@ -52,7 +56,7 @@ export class Root extends React.Component<{}, State> {
     );
   }
 
-  async componentDidUpdate(prevProps: Readonly<{}>, prevState: Readonly<State>, snapshot?: any): Promise<void> {
+  componentDidUpdate(): void {
     this.checkValidToken();
   }
 
@@ -61,15 +65,18 @@ export class Root extends React.Component<{}, State> {
   }
 
   private async checkValidToken() {
-    const { isLoginTokenValidated, userLoginToken } = this.state;
-    if (isLoginTokenValidated || !userLoginToken) {
+    const { playerContext, userLoginToken } = this.state;
+    if (playerContext !== null || !userLoginToken) {
       return;
     }
 
     try {
-      await axios.get('https://localhost:5001/api/player/me');
-      this.setState({ isLoginTokenValidated: true });
-    } catch {
+      const playerResponse = await axios.get<Player>('/api/player/me');
+      this.setState({ playerContext: playerResponse.data });
+    } catch(err: unknown) {
+      if(!(err instanceof AxiosError) || err.code === 'ERR_NETWORK') {
+        return;
+      }
       this.setState({ userLoginToken: null });
       localStorage.removeItem('loginId');
     }
