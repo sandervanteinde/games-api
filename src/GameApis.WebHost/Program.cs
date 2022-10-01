@@ -1,6 +1,7 @@
 using GameApis.MongoDb;
 using GameApis.Shared;
 using GameApis.Shared.Dtos;
+using GameApis.Shared.GameState;
 using GameApis.Shared.GameState.Services;
 using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
@@ -99,6 +100,24 @@ app.MapPost("/api/player", async (CreateNewPlayer body, IPlayerRepository player
         return player.Id;
     })
     .WithName("CreatePlayer")
+    .WithTags("Players");
+
+app.MapGet("/api/player/me", async (IInternalPlayerIdResolver resolver, IPlayerRepository playerRepo) =>
+    {
+        var player = await resolver.ResolveInternalPlayerIdAsync();
+        return await player.Match<Task<IResult>>(
+            async internalPlayerId =>
+            {
+                var player = await playerRepo.GetPlayerByInternalIdAsync(internalPlayerId);
+                return player.Match(
+                    player => Results.Ok(player),
+                    notFound => Results.NotFound()
+                );
+            },
+            notFound => Task.FromResult(Results.Unauthorized())
+        );
+    })
+    .WithName("GetMe")
     .WithTags("Players");
 
 app.MapPost("/api/player/exists", async (QueryPlayerInternalId body, IPlayerRepository playerRepository) =>
