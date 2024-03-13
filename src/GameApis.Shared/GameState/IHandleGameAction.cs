@@ -9,5 +9,4 @@ public interface IHandleGameAction<TGameContext, TAction>
     where TAction : IAction
 {
     OneOf<Success, ActionFailed> HandleAction(ActionContext<TGameContext, TAction> actionContext);
-
 }

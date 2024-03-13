@@ -2,14 +2,15 @@
 using OneOf.Types;
 
 namespace GameApis.Shared.GameState.Services;
+
 internal class GameRegistry : IGameRegistry
 {
-    private readonly Dictionary<Type, GameRegistryEntry> registryPerGameContext =
-        new Dictionary<Type, GameRegistryEntry>();
+    private readonly Dictionary<Type, GameRegistryEntry> registryPerGameContext = new();
 
     public OneOf<Type, NotFound> GetGameStateForGameContext<GameContext>(string name)
     {
         var gameContextType = typeof(GameContext);
+
         if (!registryPerGameContext.TryGetValue(gameContextType, out var gameRegistryEntry))
         {
             return new NotFound();
@@ -37,7 +38,7 @@ internal class GameRegistry : IGameRegistry
 
     public void RegisterGame(Type gameContext, string identifier, Type initialState)
     {
-        registryPerGameContext[gameContext] = new GameRegistryEntry(gameContext, initialState, identifier, new Dictionary<string, Type>(), new List<Type>());
+        registryPerGameContext[gameContext] = new GameRegistryEntry(gameContext, initialState, identifier, new Dictionary<string, Type>(), []);
     }
 
     public IEnumerable<GameRegistryEntry> EnumerateGameRegistryEntries()

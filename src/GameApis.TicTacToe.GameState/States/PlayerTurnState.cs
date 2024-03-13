@@ -11,19 +11,19 @@ namespace GameApis.TicTacToe.GameState.States;
 
 internal class PlayerTurnState
     : IGameState<TicTacToeContext>
-    , IHandleGameAction<TicTacToeContext, PerformPlayAction>
+        , IHandleGameAction<TicTacToeContext, PerformPlayAction>
 {
-    private static readonly BoardPositions[][] winPositions = new BoardPositions[][]
-    {
-        new[] { BoardPositions.TopLeft, BoardPositions.Top, BoardPositions.TopRight },
-        new[] { BoardPositions.Left, BoardPositions.Middle, BoardPositions.Right },
-        new[] { BoardPositions.BottomLeft, BoardPositions.Bottom, BoardPositions.BottomRight },
-        new[] { BoardPositions.TopLeft, BoardPositions.Left, BoardPositions.BottomLeft },
-        new[] { BoardPositions.Top, BoardPositions.Middle, BoardPositions.Bottom },
-        new[] { BoardPositions.TopRight, BoardPositions.Right, BoardPositions.BottomRight },
-        new[] { BoardPositions.TopLeft, BoardPositions.Middle, BoardPositions.BottomRight },
-        new[] { BoardPositions.TopRight, BoardPositions.Middle, BoardPositions.BottomLeft }
-    };
+    private static readonly BoardPositions[][] WinPositions =
+    [
+        [BoardPositions.TopLeft, BoardPositions.Top, BoardPositions.TopRight],
+        [BoardPositions.Left, BoardPositions.Middle, BoardPositions.Right],
+        [BoardPositions.BottomLeft, BoardPositions.Bottom, BoardPositions.BottomRight],
+        [BoardPositions.TopLeft, BoardPositions.Left, BoardPositions.BottomLeft],
+        [BoardPositions.Top, BoardPositions.Middle, BoardPositions.Bottom],
+        [BoardPositions.TopRight, BoardPositions.Right, BoardPositions.BottomRight],
+        [BoardPositions.TopLeft, BoardPositions.Middle, BoardPositions.BottomRight],
+        [BoardPositions.TopRight, BoardPositions.Middle, BoardPositions.BottomLeft]
+    ];
 
     public string GetDescription(TicTacToeContext gameContext)
     {
@@ -31,7 +31,7 @@ internal class PlayerTurnState
         {
             PlayerTurn.PlayerX => "Player one's turn to make a move",
             PlayerTurn.PlayerO => "Player two's turn to make a move",
-            _ => "Unknown state",
+            _ => "Unknown state"
         };
     }
 
@@ -49,12 +49,14 @@ internal class PlayerTurnState
             return new ActionFailed("This position was already taken.");
         }
 
-        context.PlayedPositions.Add(action.Position, playerTurn switch
-        {
-            PlayerTurn.PlayerO => BoardState.O,
-            PlayerTurn.PlayerX => BoardState.X,
-            _ => throw new InvalidEnumArgumentException(nameof(playerTurn), (int)playerTurn, typeof(PlayerTurn))
-        });
+        context.PlayedPositions.Add(
+            action.Position, playerTurn switch
+            {
+                PlayerTurn.PlayerO => BoardState.O,
+                PlayerTurn.PlayerX => BoardState.X,
+                _ => throw new InvalidEnumArgumentException(nameof(playerTurn), (int)playerTurn, typeof(PlayerTurn))
+            }
+        );
 
         context.PlayerTurn = context.PlayerTurn is PlayerTurn.PlayerO
             ? PlayerTurn.PlayerX
@@ -71,12 +73,12 @@ internal class PlayerTurnState
 
     private static bool IsItPlayersTurn(TicTacToeContext context, PlayerId player, out PlayerTurn playerTurn)
     {
-
         if (context.PlayerUsingO == player && context.PlayerTurn == PlayerTurn.PlayerO)
         {
             playerTurn = PlayerTurn.PlayerO;
             return true;
         }
+
         if (context.PlayerUsingX == player && context.PlayerTurn == PlayerTurn.PlayerX)
         {
             playerTurn = PlayerTurn.PlayerX;
@@ -89,7 +91,7 @@ internal class PlayerTurnState
 
     private static bool HasGameEnded(TicTacToeContext context, out PlayerTurn winner)
     {
-        foreach (var winPosition in winPositions)
+        foreach (var winPosition in WinPositions)
         {
             if (IsMatch(winPosition, out winner))
             {
@@ -109,6 +111,7 @@ internal class PlayerTurnState
         bool IsMatch(BoardPositions[] positions, out PlayerTurn winner)
         {
             BoardState stateFound = default;
+
             for (var i = 0; i < positions.Length; i++)
             {
                 if (!context.PlayedPositions.TryGetValue(positions[i], out var state))
@@ -116,6 +119,7 @@ internal class PlayerTurnState
                     winner = default;
                     return false;
                 }
+
                 if (i == 0)
                 {
                     stateFound = state;
@@ -126,6 +130,7 @@ internal class PlayerTurnState
                     return false;
                 }
             }
+
             winner = stateFound switch
             {
                 BoardState.X => PlayerTurn.PlayerX,

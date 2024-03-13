@@ -6,20 +6,14 @@ using OneOf.Types;
 
 namespace GameApis.MongoDb;
 
-internal class PlayerRepository : IPlayerRepository
+internal class PlayerRepository(IMongoClient mongoClient) : IPlayerRepository
 {
-    private readonly IMongoClient mongoClient;
-
-    public PlayerRepository(IMongoClient mongoClient)
-    {
-        this.mongoClient = mongoClient;
-    }
-
     public async Task<OneOf<Player, NotFound>> GetPlayerByExternalIdAsync(ExternalPlayerId externalPlayerId)
     {
         var collection = GetCollection();
         var cursor = await collection.FindAsync(player => player.ExternalId == externalPlayerId);
         var foundPlayer = await cursor.FirstOrDefaultAsync();
+
         if (foundPlayer is null)
         {
             return new NotFound();
@@ -33,6 +27,7 @@ internal class PlayerRepository : IPlayerRepository
         var collection = GetCollection();
         var cursor = await collection.FindAsync(player => player.InternalId == internalId);
         var foundPlayer = await cursor.FirstOrDefaultAsync();
+
         if (foundPlayer is null)
         {
             return new NotFound();
@@ -44,12 +39,7 @@ internal class PlayerRepository : IPlayerRepository
     public Task StorePlayerAsyc(Player player)
     {
         var collection = GetCollection();
-        var entry = new PlayerEntry
-        {
-            ExternalId = player.Id.ExternalId,
-            InternalId = player.Id.InternalId,
-            Name = player.Name
-        };
+        var entry = new PlayerEntry { ExternalId = player.Id.ExternalId, InternalId = player.Id.InternalId, Name = player.Name };
 
         return collection.InsertOneAsync(entry);
     }

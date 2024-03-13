@@ -22,6 +22,7 @@ public class GameApiBuilder
     {
         var gameContextType = typeof(TGameContext);
         var gameAttribute = gameContextType.GetCustomAttribute<GameAttribute>();
+
         if (gameAttribute is null)
         {
             throw new InvalidOperationException("A [Game] attribute is required on the game context.");
@@ -39,6 +40,7 @@ public class GameApiBuilder
                 gameStateRegistry.RegisterGameState(gameContextType, assemblyType);
                 serviceCollection.AddTransient(assemblyType);
             }
+
             if (assemblyType.IsAssignableTo(gameAction))
             {
                 gameStateRegistry.RegisterGameAction(gameContextType, assemblyType);

@@ -1,23 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>e5d3fbd1-0b3f-4018-bfbe-91d16275db57</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>e5d3fbd1-0b3f-4018-bfbe-91d16275db57</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\GameApis.MongoDb\GameApis.MongoDb.csproj" />
-    <ProjectReference Include="..\GameApis.Shared\GameApis.Shared.csproj" />
-    <ProjectReference Include="..\GameApis.TicTacToe.GameState\GameApis.TicTacToe.GameState.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\GameApis.MongoDb\GameApis.MongoDb.csproj"/>
+        <ProjectReference Include="..\GameApis.Shared\GameApis.Shared.csproj"/>
+        <ProjectReference Include="..\GameApis.TicTacToe.GameState\GameApis.TicTacToe.GameState.csproj"/>
+    </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using GameApis.Shared.GameState;
-using OneOf;
+﻿using OneOf;
 using OneOf.Types;
 
 namespace GameApis.Shared.GameState.Services;

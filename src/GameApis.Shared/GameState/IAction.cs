@@ -1,5 +1,6 @@
-﻿namespace GameApis.Shared.GameState;
+﻿using JetBrains.Annotations;
 
-public interface IAction
-{
-}
+namespace GameApis.Shared.GameState;
+
+[UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
+public interface IAction;

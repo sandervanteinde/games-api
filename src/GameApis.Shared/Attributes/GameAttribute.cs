@@ -1,15 +1,8 @@
 ﻿namespace GameApis.Shared.Attributes;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-public class GameAttribute : Attribute
+[AttributeUsage(AttributeTargets.Class)]
+public class GameAttribute(string identifier, Type initialState) : Attribute
 {
-    public string Identifier { get; }
-    public Type InitialState { get; }
-
-    public GameAttribute(string identifier, Type initialState)
-    {
-        Identifier = identifier;
-        InitialState = initialState;
-    }
-
+    public string Identifier { get; } = identifier;
+    public Type InitialState { get; } = initialState;
 }

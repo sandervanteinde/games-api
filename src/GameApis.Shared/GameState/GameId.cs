@@ -6,4 +6,4 @@ public record struct GameId(Guid Value)
     {
         return new GameId(Guid.NewGuid());
     }
-};
+}

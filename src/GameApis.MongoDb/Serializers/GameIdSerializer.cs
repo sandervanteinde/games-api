@@ -1,5 +1,4 @@
-﻿using GameApis.Shared;
-using GameApis.Shared.GameState;
+﻿using GameApis.Shared.GameState;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 

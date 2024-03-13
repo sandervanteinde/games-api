@@ -6,7 +6,8 @@ public class ActionResult
 {
     [MemberNotNullWhen(false, nameof(FailReason))]
     public bool IsSuccess { get; init; }
-    public string? FailReason { get; init; } = string.Empty;
+
+    public string? FailReason { get; init; }
 
     private ActionResult(string? failReason = null)
     {

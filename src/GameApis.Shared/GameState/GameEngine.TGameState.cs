@@ -40,6 +40,6 @@ public class GameEngine<TGameContext>
             IHandleGameAction<TGameContext, TAction> handler => handler.HandleAction(actionContext),
             IHandleGameActionAsync<TGameContext, TAction> asyncHandler => await asyncHandler.HandleActionAsync(actionContext),
             _ => new ActionFailed("The action was not valid in this context.")
-        }; 
+        };
     }
 }

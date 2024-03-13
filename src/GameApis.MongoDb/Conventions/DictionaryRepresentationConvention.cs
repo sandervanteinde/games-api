@@ -4,13 +4,8 @@ using MongoDB.Bson.Serialization.Options;
 
 namespace GameApis.MongoDb.Conventions;
 
-internal class DictionaryRepresentationConvention : ConventionBase, IMemberMapConvention
+internal class DictionaryRepresentationConvention(DictionaryRepresentation dictionaryRepresentation) : ConventionBase, IMemberMapConvention
 {
-    private readonly DictionaryRepresentation _dictionaryRepresentation;
-    public DictionaryRepresentationConvention(DictionaryRepresentation dictionaryRepresentation)
-    {
-        _dictionaryRepresentation = dictionaryRepresentation;
-    }
     public void Apply(BsonMemberMap memberMap)
     {
         memberMap.SetSerializer(ConfigureSerializer(memberMap.GetSerializer()));
@@ -20,7 +15,7 @@ internal class DictionaryRepresentationConvention : ConventionBase, IMemberMapCo
     {
         if (serializer is IDictionaryRepresentationConfigurable dictionaryRepresentationConfigurable)
         {
-            serializer = dictionaryRepresentationConfigurable.WithDictionaryRepresentation(_dictionaryRepresentation);
+            serializer = dictionaryRepresentationConfigurable.WithDictionaryRepresentation(dictionaryRepresentation);
         }
 
         return serializer is not IChildSerializerConfigurable childSerializerConfigurable

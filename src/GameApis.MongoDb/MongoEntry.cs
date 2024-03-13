@@ -4,8 +4,7 @@ namespace GameApis.MongoDb;
 
 public class MongoEntry<TGameContext>
 {
-    [BsonId]
-    public Guid Id { get; set; }
+    [BsonId] public Guid Id { get; set; }
 
     public TGameContext GameContext { get; set; } = default!;
 

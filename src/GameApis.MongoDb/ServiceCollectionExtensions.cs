@@ -20,8 +20,7 @@ public static class ServiceCollectionExtensions
         // Set up MongoDB conventions
         var pack = new ConventionPack
         {
-            new EnumRepresentationConvention(BsonType.String),
-            new DictionaryRepresentationConvention(DictionaryRepresentation.ArrayOfDocuments)
+            new EnumRepresentationConvention(BsonType.String), new DictionaryRepresentationConvention(DictionaryRepresentation.ArrayOfDocuments)
         };
         ConventionRegistry.Register("EnumStringConvention", pack, _ => true);
 
@@ -29,16 +28,20 @@ public static class ServiceCollectionExtensions
         BsonSerializer.RegisterSerializer(new ExternalPlayerIdSerializer());
         BsonSerializer.RegisterSerializer(new InternalPlayerIdSerializer());
 
-        BsonClassMap.RegisterClassMap<Player>(opts =>
-        {
-            opts.MapIdMember(player => player.Id);
-        });
+        BsonClassMap.RegisterClassMap<Player>(
+            opts =>
+            {
+                opts.MapIdMember(player => player.Id);
+            }
+        );
 
-        services.TryAddSingleton<IMongoClient>(_ =>
-        {
-            var mongoClientSettings = MongoClientSettings.FromConnectionString(connectionString);
-            return new MongoClient(mongoClientSettings);
-        });
+        services.TryAddSingleton<IMongoClient>(
+            _ =>
+            {
+                var mongoClientSettings = MongoClientSettings.FromConnectionString(connectionString);
+                return new MongoClient(mongoClientSettings);
+            }
+        );
 
         services.AddTransient(typeof(IGameRepository<>), typeof(MongoGameRepository<>));
         services.AddTransient<IPlayerRepository, PlayerRepository>();

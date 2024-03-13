@@ -12,7 +12,6 @@ public class TicTacToeContext : IGameContext
     public ExternalPlayerId? PlayerUsingX { get; set; }
     public ExternalPlayerId? PlayerUsingO { get; set; }
     public PlayerTurn PlayerTurn { get; set; } = PlayerTurn.None;
-    public Dictionary<BoardPositions, BoardState> PlayedPositions { get; set; } =
-        new Dictionary<BoardPositions, BoardState>();
+    public Dictionary<BoardPositions, BoardState> PlayedPositions { get; set; } = new();
     public PlayerTurn Winner { get; set; } = PlayerTurn.None;
 }

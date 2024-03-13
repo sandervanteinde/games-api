@@ -5,8 +5,7 @@ namespace GameApis.MongoDb;
 
 public class PlayerEntry
 {
-    [BsonId]
-    public InternalPlayerId InternalId { get; set; }
+    [BsonId] public InternalPlayerId InternalId { get; set; }
     public ExternalPlayerId ExternalId { get; set; }
     public string Name { get; set; } = default!;
 

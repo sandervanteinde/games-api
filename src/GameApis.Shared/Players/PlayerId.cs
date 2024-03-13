@@ -1,9 +1,12 @@
 ﻿namespace GameApis.Shared.Players;
 
 /// <summary>
-/// A player id consists out of set of two unique id's.
+///     A player id consists out of set of two unique id's.
 /// </summary>
-/// <param name="InternalId">The internal id as known by the user itself. It should only be known to the entity who owns this player.</param>
+/// <param name="InternalId">
+///     The internal id as known by the user itself. It should only be known to the entity who owns
+///     this player.
+/// </param>
 /// <param name="ExternalId">The external id used by other players to reference this entity.</param>
 public record struct PlayerId(InternalPlayerId InternalId, ExternalPlayerId ExternalId)
 {

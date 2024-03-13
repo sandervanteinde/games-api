@@ -1,7 +1,7 @@
 ﻿namespace GameApis.Shared.Players;
 
 /// <summary>
-/// The external player id. Can be used to reference a player entity.
+///     The external player id. Can be used to reference a player entity.
 /// </summary>
 public record struct ExternalPlayerId(Guid Value)
 {

@@ -59,8 +59,12 @@ internal static class EndpointHandlers
         {
             var gameEngineResult = await gameRepository.GetGameEngineAsync(new GameId(gameId));
             return gameEngineResult.Match(
-                gameEngine => Results.Ok(new GetGameResult<TGameContext>(gameEngine.GameContext,
-                    gameEngine.GameState.GetDescription(gameEngine.GameContext))),
+                gameEngine => Results.Ok(
+                    new GetGameResult<TGameContext>(
+                        gameEngine.GameContext,
+                        gameEngine.GameState.GetDescription(gameEngine.GameContext)
+                    )
+                ),
                 _ => Results.NotFound()
             );
         };
@@ -69,7 +73,7 @@ internal static class EndpointHandlers
     private static Delegate CreateDelegateForMethod(string methodName, params Type[] genericArguments)
     {
         var method = typeof(EndpointHandlers).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic)
-                     ?? throw new InvalidOperationException($"Did not find {nameof(methodName)} method");
+            ?? throw new InvalidOperationException($"Did not find {nameof(methodName)} method");
         var genericMethod = method.MakeGenericMethod(genericArguments);
         return (Delegate)genericMethod.Invoke(null, Array.Empty<object>())!;
     }

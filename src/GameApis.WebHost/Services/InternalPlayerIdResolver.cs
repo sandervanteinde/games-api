@@ -25,8 +25,8 @@ public class InternalPlayerIdResolver : IInternalPlayerIdResolver
 
     private OneOf<InternalPlayerId, NotFound> ResolveInternalPlayerId()
     {
-
         var httpContext = httpContextAccessor.HttpContext;
+
         if (httpContext is null)
         {
             return new NotFound();
