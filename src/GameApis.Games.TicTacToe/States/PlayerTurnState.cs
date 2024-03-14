@@ -1,13 +1,13 @@
-﻿using GameApis.Shared.Dtos;
+﻿using GameApis.Games.TicTacToe.Actions;
+using GameApis.Games.TicTacToe.Models;
+using GameApis.Shared.Dtos;
 using GameApis.Shared.GameState;
 using GameApis.Shared.Players;
-using GameApis.TicTacToe.GameState.Actions;
-using GameApis.TicTacToe.GameState.Models;
 using OneOf;
 using OneOf.Types;
 using System.ComponentModel;
 
-namespace GameApis.TicTacToe.GameState.States;
+namespace GameApis.Games.TicTacToe.States;
 
 internal class PlayerTurnState
     : IGameState<TicTacToeContext>

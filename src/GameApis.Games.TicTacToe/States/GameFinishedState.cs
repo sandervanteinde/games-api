@@ -1,8 +1,8 @@
-﻿using GameApis.Shared.GameState;
-using GameApis.TicTacToe.GameState.Models;
+﻿using GameApis.Games.TicTacToe.Models;
+using GameApis.Shared.GameState;
 using System.ComponentModel;
 
-namespace GameApis.TicTacToe.GameState.States;
+namespace GameApis.Games.TicTacToe.States;
 
 internal class GameFinishedState : IGameState<TicTacToeContext>
 {

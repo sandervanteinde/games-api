@@ -1,10 +1,10 @@
+using GameApis.Games.TicTacToe;
 using GameApis.MongoDb;
 using GameApis.Shared;
 using GameApis.Shared.Dtos;
 using GameApis.Shared.GameState.Services;
 using GameApis.Shared.Players;
 using GameApis.Shared.Players.Services;
-using GameApis.TicTacToe.GameState;
 using GameApis.WebHost;
 using GameApis.WebHost.Models;
 using GameApis.WebHost.Services;
@@ -94,7 +94,7 @@ foreach (var entry in gameRegistry.EnumerateGameRegistryEntries())
 {
     app.MapPost(
             $"/api/{entry.Identifier}",
-            EndpointHandlers.HandleCreateGame(entry.GameContextType, entry.InitialState)
+            EndpointHandlers.HandleCreateGame(entry.GameContextType)
         )
         .Produces(200, typeof(Guid))
         .WithName($"Create{entry.Identifier}Game")

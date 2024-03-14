@@ -5,7 +5,6 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>e5d3fbd1-0b3f-4018-bfbe-91d16275db57</UserSecretsId>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\GameApis.MongoDb\GameApis.MongoDb.csproj"/>
         <ProjectReference Include="..\GameApis.Shared\GameApis.Shared.csproj"/>
-        <ProjectReference Include="..\GameApis.TicTacToe.GameState\GameApis.TicTacToe.GameState.csproj"/>
+        <ProjectReference Include="..\GameApis.Games.TicTacToe\GameApis.Games.TicTacToe.csproj" />
     </ItemGroup>
 
 </Project>

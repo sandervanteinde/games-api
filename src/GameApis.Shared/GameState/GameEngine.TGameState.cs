@@ -6,7 +6,7 @@ using OneOf.Types;
 namespace GameApis.Shared.GameState;
 
 public class GameEngine<TGameContext>
-    where TGameContext : IGameContext
+    where TGameContext : IGameContext<TGameContext>
 {
     public TGameContext GameContext { get; }
     public IGameState<TGameContext> GameState { get; private set; }

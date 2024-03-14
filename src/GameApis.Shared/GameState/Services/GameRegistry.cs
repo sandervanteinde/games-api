@@ -7,9 +7,9 @@ internal class GameRegistry : IGameRegistry
 {
     private readonly Dictionary<Type, GameRegistryEntry> registryPerGameContext = new();
 
-    public OneOf<Type, NotFound> GetGameStateForGameContext<GameContext>(string name)
+    public OneOf<Type, NotFound> GetGameStateForGameContext<TContext>(string name)
     {
-        var gameContextType = typeof(GameContext);
+        var gameContextType = typeof(TContext);
 
         if (!registryPerGameContext.TryGetValue(gameContextType, out var gameRegistryEntry))
         {
@@ -36,9 +36,9 @@ internal class GameRegistry : IGameRegistry
         gameRegistryEntry.Actions.Add(gameAction);
     }
 
-    public void RegisterGame(Type gameContext, string identifier, Type initialState)
+    public void RegisterGame(Type gameContext, string identifier)
     {
-        registryPerGameContext[gameContext] = new GameRegistryEntry(gameContext, initialState, identifier, new Dictionary<string, Type>(), []);
+        registryPerGameContext[gameContext] = new GameRegistryEntry(gameContext, identifier, new Dictionary<string, Type>(), []);
     }
 
     public IEnumerable<GameRegistryEntry> EnumerateGameRegistryEntries()

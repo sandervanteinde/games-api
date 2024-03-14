@@ -12,7 +12,7 @@ internal class GameActionHandler<TGameContext>(
     IPlayerRepository playerRepository,
     ILogger<GameActionHandler<TGameContext>> logger)
     : IGameActionHandler<TGameContext>
-    where TGameContext : IGameContext
+    where TGameContext : IGameContext<TGameContext>
 {
     public async Task<OneOf<Success, ActionFailed>> HandleGameActionAsync<TAction>(GameId gameId, TAction gameAction)
         where TAction : IAction

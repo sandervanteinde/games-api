@@ -1,5 +1,5 @@
 ﻿using GameApis.Shared.GameState;
 
-namespace GameApis.TicTacToe.GameState.Actions;
+namespace GameApis.Games.TicTacToe.Actions;
 
 public record JoinPlayerAction : IAction;

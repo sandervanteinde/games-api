@@ -10,7 +10,7 @@ internal class MongoGameRepository<TGameContext>(
     IMongoClient mongoClient,
     IGameStateResolver<TGameContext> gameStateResolver)
     : IGameRepository<TGameContext>
-    where TGameContext : IGameContext
+    where TGameContext : IGameContext<TGameContext>
 {
     public async Task<OneOf<GameEngine<TGameContext>, NotFound>> GetGameEngineAsync(GameId gameId)
     {

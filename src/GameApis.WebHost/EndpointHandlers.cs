@@ -10,9 +10,9 @@ namespace GameApis.WebHost;
 /// </summary>
 internal static class EndpointHandlers
 {
-    public static Delegate HandleCreateGame(Type gameContextType, Type initialStateType)
+    public static Delegate HandleCreateGame(Type gameContextType)
     {
-        return CreateDelegateForMethod(nameof(HandleCreateGameGeneric), gameContextType, initialStateType);
+        return CreateDelegateForMethod(nameof(HandleCreateGameGeneric), gameContextType);
     }
 
     public static Delegate HandleGetGame(Type gameContextType)
@@ -26,7 +26,7 @@ internal static class EndpointHandlers
     }
 
     private static Delegate HandleActionEndpointGeneric<TGameContext, TAction>()
-        where TGameContext : IGameContext
+        where TGameContext : IGameContext<TGameContext>
         where TAction : IAction
     {
         return async (TAction action, Guid gameId, IGameActionHandler<TGameContext> actionHandler) =>
@@ -39,13 +39,12 @@ internal static class EndpointHandlers
         };
     }
 
-    private static Delegate HandleCreateGameGeneric<TGameContext, TInitialState>()
-        where TGameContext : IGameContext, new()
-        where TInitialState : IGameState<TGameContext>
+    private static Delegate HandleCreateGameGeneric<TGameContext>()
+        where TGameContext : IGameContext<TGameContext>, new()
     {
-        return async (IGameRepository<TGameContext> gameRepository, TInitialState initialState) =>
+        return async (IGameRepository<TGameContext> gameRepository) =>
         {
-            var gameEngine = new GameEngine<TGameContext>(initialState, new TGameContext());
+            var gameEngine = new GameEngine<TGameContext>(TGameContext.GetInitialState(), new TGameContext());
             var gameId = GameId.New();
             await gameRepository.PersistGameEngineAsync(gameId, gameEngine);
             return gameId.Value;
@@ -53,7 +52,7 @@ internal static class EndpointHandlers
     }
 
     private static Delegate HandleGetGameGeneric<TGameContext>()
-        where TGameContext : IGameContext
+        where TGameContext : IGameContext<TGameContext>
     {
         return async (Guid gameId, IGameRepository<TGameContext> gameRepository) =>
         {

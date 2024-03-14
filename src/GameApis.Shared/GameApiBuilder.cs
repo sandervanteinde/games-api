@@ -1,8 +1,6 @@
-﻿using GameApis.Shared.Attributes;
-using GameApis.Shared.GameState;
+﻿using GameApis.Shared.GameState;
 using GameApis.Shared.GameState.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace GameApis.Shared;
 
@@ -18,19 +16,15 @@ public class GameApiBuilder
     }
 
     public GameApiBuilder RegisterGameContext<TGameContext>()
-        where TGameContext : IGameContext
+        where TGameContext : IGameContext<TGameContext>
     {
         var gameContextType = typeof(TGameContext);
-        var gameAttribute = gameContextType.GetCustomAttribute<GameAttribute>();
 
-        if (gameAttribute is null)
-        {
-            throw new InvalidOperationException("A [Game] attribute is required on the game context.");
-        }
+        gameStateRegistry.RegisterGame(gameContextType, TGameContext.GameIdentifier);
 
-        gameStateRegistry.RegisterGame(gameContextType, gameAttribute.Identifier, gameAttribute.InitialState);
+        var gameStates = typeof(IGameState<>)
+            .MakeGenericType(gameContextType);
 
-        var gameStates = typeof(IGameState<>).MakeGenericType(gameContextType);
         var gameAction = typeof(IAction);
 
         foreach (var assemblyType in gameContextType.Assembly.DefinedTypes)

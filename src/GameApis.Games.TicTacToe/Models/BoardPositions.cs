@@ -1,4 +1,4 @@
-﻿namespace GameApis.TicTacToe.GameState.Models;
+﻿namespace GameApis.Games.TicTacToe.Models;
 
 public enum BoardPositions
 {
